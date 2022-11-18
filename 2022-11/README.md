@@ -26,4 +26,23 @@ td:eq(1) -> 선택(클릭)한 row의 두 번째 데이터. 즉 컬럼 1
 const clickedQuestionAuthor = $("#question-" + questionId).children('td:eq(3)').text()
 ```
 
+## 11월 18일
+### LocalDate를 LocalDateTime으로 변환하기
+.atStartOfDay() 날짜 + 00:00:00.00000000을 의미한다.
+.atTime(LocalTime.MAX) 날짜 + 23:59.99999999를 의미한다.
+```java
+LocalDate date = LocalDate.parse("2021-10-25);
+LocalDateTIme localDateTime1 = date.atStartOfDay();
+LocalDateTIme localDateTIme2 = date.atTime(LocalTime.MAX);
+```
+실제 사용 예시는 다음과 같다.
+```java
+String matchingStartTime = player.getMatching().getMatchingStartTime(); // 21:30
+LocalDate date = player.getMatching().getMatchingDate(); // 11-18
+LocalDateTime localDateTime = date.atTime(LocalTime.parse(matchingStartTime)); // 11-18T21:30
+```
+
+
+
+
 
