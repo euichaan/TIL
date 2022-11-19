@@ -42,6 +42,40 @@ LocalDate date = player.getMatching().getMatchingDate(); // 11-18
 LocalDateTime localDateTime = date.atTime(LocalTime.parse(matchingStartTime)); // 11-18T21:30
 ```
 
+## 11월 19일 
+### 서블릿 예외 처리
+- `Exception` 예외
+- `response.sendError` (HTTP 상태 코드, 오류 메시지)
+
+웹 애플리케이션은 사용자 요청별로 별도의 쓰레드가 할당. 서블릿 컨테이너 안에서 실행   
+애플리케이션에서 예외가 발생했는데, try ~ catch로 예외를 잡아서 처리하면 문제가 없다.  
+만약에 애플리케이션에서 예외를 잡지 못하고, 서블릿 밖으로 까지 예외가 전달되면?  
+```
+WAS <- 필터 <- 서블릿 <- 인터셉터 <- 컨트롤러(예외발생)
+```
+톰캣 같은 WAS까지 예외 전달. WAS는 예외가 올라오면 어떻게 처리해야 할까?  
+
+```java
+ @GetMapping("/error-ex")
+  public void errorEx() {
+    throw new RuntimeException("예외 발생!");
+  }
+```
+#### `Exception`의 경우 
+서버 내부에서 처리할 수 없는 오류가 발생한 것으로 생각. HTTP 상태 코드 500을 반환한다.  
+#### `response.sendError(HTTp 상태 코드, 오류 메시지)`
+호출한다고 당장 예외가 발생하는 것은 아니지만, 서블릿 컨테이너에게 오류가 발생했다는 점을 전달할 수 있다.  
+이 메서드를 사용하면 HTTP 상태 코드와 오류 메시지도 추가할 수 있다.  
+```java
+WAS <- 필터 <- 서블릿 <- 인터셉터 <- 컨트롤러(response.sendError())
+```
+`response` 내부에 오류가 발생했다는 상태 저장. 서블릿 컨테이너는 고객에게 응답 전에 response에 sendError()가  
+호출되었는지 확인한다. 그리고 호출되었다면 설정한 오류 코드에 맞추어 기본 오류 페이지를 보여준다.  
+
+
+
+
+
 
 
 
