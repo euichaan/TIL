@@ -108,7 +108,7 @@ $( function() {
   </div>
 </body>
 ```
-결과 : 안녕하세요  
+결과 : 안녕하세요.  
 
 - `$(셀렉터).val()`
 input 태그에 정의된 **value 속성**의 값을 확인하고자 할 때 사용  
@@ -127,6 +127,55 @@ $( function() {
 </body>
 ```
 결과 : 텍스트  
+
+- `on Function`  
+jQuerydptj 이벤트를 바인드 하는 방법. `on()` 함수를 이용해서 이벤트를 바인드 할 수 있다.  
+기본적으로 다음처럼 작성한다.  
+```javascript
+$(selector).on(eventType, function() {
+  // ...something
+});
+```
+
+- focusout과 함께 사용하기  
+focusout 포커스 아웃 이벤트는 요소(또는 하위요소)가 포커스를 잃을 때 발생한다.  
+```javascript
+$("#foucisId").focusout(fuction() {
+// ...something
+});
+```
+focusin 포커스 인 이벤트는 요소(또는 하위요소)가 포커스를 얻을 때 발생한다.
+```javascript
+$("#foucisId").focusin(fuction() {
+// ...something
+});
+```
+on 함수와 함께 사용하면 다음과 같다.   
+```javascript
+$("#selfIntroduction").on("focusout", function () {
+
+    let member = {
+        introduction : $("#selfIntroduction").val()
+    }
+    console.log(member.introduction.length)
+
+    if (member.introduction.length >= 100) {
+        //자기소개 100자 이상일 시 에러
+        $("#introduction-length-check").removeAttr("hidden");
+        validationLength.length = "error"
+        validationLengthCheck();
+    } else {
+        //정상 경우
+        $("#introduction-length-check").attr("hidden", true);
+        validationLength.length = "ok";
+        validationLengthCheck();
+    }
+})
+```
+
+
+
+
 
 
 
