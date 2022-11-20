@@ -137,7 +137,7 @@ $(selector).on(eventType, function() {
 });
 ```
 
-- `focusout과 함께 사용하기`#  
+- `focusout과 함께 사용하기`   
 focusout 포커스 아웃 이벤트는 요소(또는 하위요소)가 포커스를 잃을 때 발생한다.  
 ```javascript
 $("#foucisId").focusout(fuction() {
