@@ -265,6 +265,26 @@ WAS `/error-page/500` 다시 요청 -> 필터 -> 서블릿 -> 인터셉터 -> �
 2. WAS는 오류 페이지 경로를 찾아서 내부에서 오류 페이지를 호출한다. 이때 오류 페이지 경로로  
 필터, 서블릿, 인터셉터, 컨트롤러가 모두 다시 호출된다.  
 
+오류 정보를 `request`의 `attribute`에 추가해서 넘겨준다. 필요하면 사용 가능하다.  
+```java
+  private void printErrorInfo(HttpServletRequest request) {
+
+    log.info("ERROR_EXCEPTION: ex=", request.getAttribute(ERROR_EXCEPTION));
+    log.info("ERROR_EXCEPTION_TYPE: {}", request.getAttribute(ERROR_EXCEPTION_TYPE));
+    log.info("ERROR_MESSAGE: {}", request.getAttribute(ERROR_MESSAGE)); // ex의 경우 NestedServletException 스프링이 한번 감싸서 반환
+    log.info("ERROR_REQUEST_URI: {}", request.getAttribute(ERROR_REQUEST_URI));
+    log.info("ERROR_SERVLET_NAME: {}", request.getAttribute(ERROR_SERVLET_NAME));
+    log.info("ERROR_STATUS_CODE: {}", request.getAttribute(ERROR_STATUS_CODE));
+    log.info("dispatchType={}", request.getDispatcherType());
+  }
+```
+
+## 서블릿 예외 처리 - 필터
+**예외 발생과 오류 페이지 요청 흐름**
+```
+1. WAS(여기까지 전파) <- 필터 <- 서블릿 <- 인터셉터 <- 컨트롤러(예외발생)
+2. WAS `/error-page/500` 다시 요청 -> 필터 -> 서블릿 -> 인터셉터 -> 컨트롤러(/error-page/500) -> View
+```  
 
 
 
