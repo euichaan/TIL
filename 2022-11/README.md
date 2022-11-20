@@ -129,7 +129,7 @@ $( function() {
 결과 : 텍스트  
 
 - `on Function`  
-jQuerydptj 이벤트를 바인드 하는 방법. `on()` 함수를 이용해서 이벤트를 바인드 할 수 있다.  
+jQuery 이벤트를 바인드 하는 방법. `on()` 함수를 이용해서 이벤트를 바인드 할 수 있다.  
 기본적으로 다음처럼 작성한다.  
 ```javascript
 $(selector).on(eventType, function() {
@@ -137,7 +137,7 @@ $(selector).on(eventType, function() {
 });
 ```
 
-- focusout과 함께 사용하기  
+- `focusout과 함께 사용하기`#  
 focusout 포커스 아웃 이벤트는 요소(또는 하위요소)가 포커스를 잃을 때 발생한다.  
 ```javascript
 $("#foucisId").focusout(fuction() {
