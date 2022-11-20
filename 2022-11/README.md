@@ -72,6 +72,69 @@ WAS <- 필터 <- 서블릿 <- 인터셉터 <- 컨트롤러(response.sendError())
 `response` 내부에 오류가 발생했다는 상태 저장. 서블릿 컨테이너는 고객에게 응답 전에 response에 sendError()가  
 호출되었는지 확인한다. 그리고 호출되었다면 설정한 오류 코드에 맞추어 기본 오류 페이지를 보여준다.  
 
+## 11월 19일
+### jQuery
+- `$(셀렉터).html()`
+셀렉터 하위에 있는 자식 태그들을 **태그나 문자열 따질 것 없이 전부** 가져온다.  
+```html
+<script type="text/javascript">
+$( function() {
+  var word = $("#name").html();
+  console.log(word);
+});
+</script>
+</head>
+<body>
+  <div id="name">
+    <span>안녕하세요.</span>
+  </div>
+</body>
+```
+결과 : <span>안녕하세요.</span>  
+
+- `$(셀렉터).text()`
+셀렉터 하위에 있는 자식 태그들의 **문자열**만 출력
+```html
+<script type="text/javascript">
+$( function() {
+  var word = $("#name").text();
+  console.log(word);
+});
+</script>
+</head>
+<body>
+  <div id="name">
+    <span>안녕하세요.</span>
+  </div>
+</body>
+```
+결과 : 안녕하세요  
+
+- `$(셀렉터).val()`
+input 태그에 정의된 **value 속성**의 값을 확인하고자 할 때 사용  
+```html
+<script type="text/javascript">
+$( function() {
+  var word = $("#name").val();
+  console.log(word);
+});
+</script>
+</head>
+<body>
+ <div>
+  <input id="name" type="text" value="텍스트">
+ </div>
+</body>
+```
+결과 : 텍스트  
+
+
+
+
+
+
+
+
 
 
 
