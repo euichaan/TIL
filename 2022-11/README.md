@@ -215,6 +215,57 @@ WAS <- 필터 <- 서블릿 <- 인터셉터 <- 컨트롤러(response.sendError())
 그리고 서블릿 컨테이너는 고객에게 응답 전에 `response`에 `sendError()`가 호출되었는지 확인한다.  
 그리고 호출되었다면 설정한 오류 코드에 맞추어 기본 오류 페이지를 보여준다.  
 
+## 서블릿 예외 처리 - 오류 화면 제공  
+서블릿은 `Exception(예외)`가 발생해서 서블릿 밖으로 전달되거나 또는 `response.snedError()`가 호출되었을 때  
+각각의 상황에 맞춘 오류 처리 기능을 제공한다.  
+```java
+@Component
+public class WebServerCustomizer implements WebServerFactoryCustomizer<ConfigurableWebServerFactory> {
+
+  //==기본 오류 페이지 커스텀==//
+  @Override
+  public void customize(ConfigurableWebServerFactory factory) {
+    ErrorPage errorPage404 = new ErrorPage(HttpStatus.NOT_FOUND, "/error-page/400");
+    ErrorPage errorPage500 = new ErrorPage(HttpStatus.INTERNAL_SERVER_ERROR, "/error-page/500");
+
+    ErrorPage errorPageEx = new ErrorPage(RuntimeException.class, "/error-page/500"); //RuntimeException의 자식 예외까지 처리
+
+    factory.addErrorPages(errorPage404, errorPage500, errorPageEx); //등록
+  }
+}
+
+```
+- `response.sendError(404):` `errorPage404` 호출   
+- `response.sendError(404):` `errorPage404` 호출   
+- `RuntimeException` 또는 그 자식 타입의 예외 : `errorPageEx` 호출  
+오류가 발생했을 때 처리할 수 있는 컨트롤러가 필요. 예를 들어RuntimeException 예외가 발생하면  
+errorPageEx에서 지정한 `/error-page/500`이 호출된다.  
+
+## 서블릿 예외 처리 - 오류 페이지 작동 원리
+서블릿은 `Exception` 이 발생해서 서블릿 밖으로 전달되거나 `response.sendError()`가 호출  
+되엇을 때 설정된 오류 페이지를 찾는다.  
+
+예를 들어 `RuntimeException` 예외가 WAS까지 전달되면, WAS는 오류 페이지 정보를 확인한다.  
+확인해보니 `RuntimeException`의 오류 페이지로 `/error-page/500`이 지정되어 있다.  
+WAS는 오류 페이지를 출력하기 위해 `/error-page/500`을 다시 요청한다.  
+
+**오류 페이지 요청 흐름**
+```
+WAS `/error-page/500` 다시 요청 -> 필터 -> 서블릿 -> 인터셉터 -> 컨트롤러(/error-page/500) -> View
+```  
+**예외 발생과 오류 페이지 요청 흐름**
+```
+1. WAS(여기까지 전파) <- 필터 <- 서블릿 <- 인터셉터 <- 컨트롤러(예외발생)
+2. WAS `/error-page/500` 다시 요청 -> 필터 -> 서블릿 -> 인터셉터 -> 컨트롤러(/error-page/500) -> View
+```  
+**중요한 점은 웹 브라우저(클라이언트)는 서버 내부에서 이런 일이 일어나는지 전혀 모른다는 점이다.**  
+**오직 서버 내부에서 오류 페이지를 찾기 위해 추가적인 호출을 한다.**  
+정리하면 다음과 같다.
+1. 예외가 발생해서 WAS까지 전파된다.  
+2. WAS는 오류 페이지 경로를 찾아서 내부에서 오류 페이지를 호출한다. 이때 오류 페이지 경로로  
+필터, 서블릿, 인터셉터, 컨트롤러가 모두 다시 호출된다.  
+
+
 
 
 
