@@ -1,5 +1,5 @@
-## 11월 17일
-### thymeleaf th:id
+# 11월 17일
+## thymeleaf th:id
 th:each 문과 같은 경우, onclick으로 값을 빼내고 싶어도 쉽지 않다.
 id를 다르게 구별하는 전략을 주로 쓰는데, th:id를 통해 객체의 값을 id로 쓰면 구분 가능하다.
 ```html
@@ -7,7 +7,7 @@ th:id="'g' + ${question.id}"
 ```
 이런식으로 문자를 추가하고 싶을 때는 '문자열' + 를 붙이면 된다.
 
-### jQuery
+## jQuery
 ```html
 .children()
 ```
@@ -26,8 +26,8 @@ td:eq(1) -> 선택(클릭)한 row의 두 번째 데이터. 즉 컬럼 1
 const clickedQuestionAuthor = $("#question-" + questionId).children('td:eq(3)').text()
 ```
 
-## 11월 18일
-### LocalDate를 LocalDateTime으로 변환하기
+# 11월 18일
+## LocalDate를 LocalDateTime으로 변환하기
 .atStartOfDay() 날짜 + 00:00:00.00000000을 의미한다.
 .atTime(LocalTime.MAX) 날짜 + 23:59.99999999를 의미한다.
 ```java
@@ -42,8 +42,8 @@ LocalDate date = player.getMatching().getMatchingDate(); // 11-18
 LocalDateTime localDateTime = date.atTime(LocalTime.parse(matchingStartTime)); // 11-18T21:30
 ```
 
-## 11월 19일 
-### 서블릿 예외 처리
+# 11월 19일 
+## 서블릿 예외 처리
 - `Exception` 예외
 - `response.sendError` (HTTP 상태 코드, 오류 메시지)
 
@@ -61,9 +61,9 @@ WAS <- 필터 <- 서블릿 <- 인터셉터 <- 컨트롤러(예외발생)
     throw new RuntimeException("예외 발생!");
   }
 ```
-#### `Exception`의 경우 
+### `Exception`의 경우 
 서버 내부에서 처리할 수 없는 오류가 발생한 것으로 생각. HTTP 상태 코드 500을 반환한다.  
-#### `response.sendError(HTTp 상태 코드, 오류 메시지)`
+### `response.sendError(HTTp 상태 코드, 오류 메시지)`
 호출한다고 당장 예외가 발생하는 것은 아니지만, 서블릿 컨테이너에게 오류가 발생했다는 점을 전달할 수 있다.  
 이 메서드를 사용하면 HTTP 상태 코드와 오류 메시지도 추가할 수 있다.  
 ```java
@@ -72,8 +72,8 @@ WAS <- 필터 <- 서블릿 <- 인터셉터 <- 컨트롤러(response.sendError())
 `response` 내부에 오류가 발생했다는 상태 저장. 서블릿 컨테이너는 고객에게 응답 전에 response에 sendError()가  
 호출되었는지 확인한다. 그리고 호출되었다면 설정한 오류 코드에 맞추어 기본 오류 페이지를 보여준다.  
 
-## 11월 19일
-### jQuery
+# 11월 19일
+## jQuery
 - `$(셀렉터).html()`
 셀렉터 하위에 있는 자식 태그들을 **태그나 문자열 따질 것 없이 전부** 가져온다.  
 ```html
@@ -172,12 +172,12 @@ $("#selfIntroduction").on("focusout", function () {
     }
 })
 ```  
-### Spring 예외 처리 복습
+## Spring 예외 처리 복습
 서블릿은 다음 2가지 방식으로 예외 처리를 지원한다.  
 - `Exception`
 - `response.sendError(HTTP 상태 코드, 오류 메시지)`
 
-#### Exception
+### Exception
 웹 애플리케이션은 사용자 요청별로 별도의 쓰레드 할당, 서블릿 컨테이너 안에서 실행된다.  
 만약 `서블릿 밖으로 까지` 예외가 전달된다면?  
 일반적인 호출 구조
@@ -198,7 +198,7 @@ WAS <- 필터 <- 서블릿 <- 인터셉터 <- 컨트롤러(예외발생)
 }
 ```
 `Exception`의 경우 서버 내부에서 처리할 수 없는 오류가 발생한 것으로 생각. HTTP 상태 코드 **`500`** 반환.  
-#### response.sendError(HTTP 상태 코드, 오류 메시지)
+### response.sendError(HTTP 상태 코드, 오류 메시지)
 `HttpServletRespone`의 `sendError` 메서드를 사용해도 된다. 이것을 호출한다고 당장 예외 발생하는 것은 아님.    
 서블릿 컨테이너에게 오류가 발생했다는 점을 전달할 수 있다.    
 ```java
