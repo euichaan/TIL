@@ -336,6 +336,44 @@ WAS(/hello, dispatchType=REQUEST) -> 필터 -> 서블릿 -> 인터셉터 -> 컨�
 ```  
 
 ## 스프링 부트 - 오류 페이지 1 
+지금까지 예외 처리 페이지를 만들기 위한 과정
+- `WebServerCustomizer` 만들기  
+- 예외 종류에 따라서 `ErrorPage` 추가  
+- 예외 처리용 컨트롤러 `ErrorPageController` 를 만듬  
+
+**스프링 부트는 이런 과정을 모두 기본으로 제공한다.**
+스프링 부트는 `ErrorPage`를 자동으로 등록한다. 이때 `/error`라는 경로로 기본 오류 페이지를 설정한다.  
+`BasicErrorController` 라는 스프링 컨트롤러를 자동으로 등록한다.  
+
+이제 오류가 발생했을 때 오류 페이지로 `/error`를 기본 요청한다. 스프링 부트가 자동 등록한  
+`BasicErrorController`는 이 경로를 기본으로 받는다.  
+
+### 개발자가 할 일 
+오류 페이지 화면만 `BasicErrorController`가 제공하는 룰고 우선순위 따라서 등록하면 된다.  
+정적 HTML이면 정적 리소스, 뷰 템플릿을 사용해서 동적으로 오류 화면을 만들고 싶으면 뷰 템플릿 경로에  
+오류 페이지 파일을 만들어서 넣어두기만 하면 된다.  
+
+참고 : `resources/static/templates/error/4xx.html` 은 400번대 에러를 모두 처리한다.  
+
+### 뷰 선택 우선순위
+`BasicErrorController`의 처리 순서  
+1. 뷰 템플릿(자세한 순서)
+- `resources/templates/error/500.html`
+- `resources/templates/error/5xx.html`
+2. 정적 리소스
+- `resources/static/error/400.html`
+- `resources/static/error/404.html`
+- `resources/static/error/4xx.html`
+
+3. 적용 대상이 없을 때 뷰 이름
+- `resources/templates/error.html`  
+
+구체적인 것이 덜 구체적인 것 보다 우선순위가 높다. 5xx, 4xx 라고 하면 각각 500대, 400대 오류를 처리해준다.  
+
+## 스프링 부트 - 오류 페이지 2
+`BasicErrorController` 컨트롤러는 다음 정보를 model에 담아서 뷰에 전달한다. 뷰 템플릿은 이 값을 활용 가능하다.  
+
+
 
 
   
