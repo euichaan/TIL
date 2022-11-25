@@ -8,4 +8,10 @@
 # 11월 24일
 AWS 배포 완료  
 
+# 11월 25일
+영어 텍스트가 줄바꿈 되지 않을 때  
+```css
+style="word-wrap: break-word"
+```
+
 
