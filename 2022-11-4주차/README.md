@@ -30,8 +30,14 @@ t = null;
 typeof 를 이용해 지정한 데이터 또는 변수에 저장된 자료형을 알고 싶을 때 사용한다.  
 
 # 11월 27일
-## 동시성 문제를 해결하기 위한 방법 
-[동시성 문제 해결](https://chan9.tistory.com/157)  
+## 동시성 문제를 해결하기 위한 방법 - 1부
+[동시성 문제 해결 1부](https://chan9.tistory.com/157)  
 
+# 11월 28일
+## 동시성 문제를 해결하기 위한 방법 - 2부
+[동시성 문제 해결 1부](https://chan9.tistory.com/158)  
+1. Synchronized 키워드를 활용하는 방법
+2. Database Lock을 사용하는 방법
+3. Redis를 사용하는 방법  
 
 
