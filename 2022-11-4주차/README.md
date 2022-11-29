@@ -35,9 +35,45 @@ typeof 를 이용해 지정한 데이터 또는 변수에 저장된 자료형을
 
 # 11월 28일
 ## 동시성 문제를 해결하기 위한 방법 - 2부
-[동시성 문제 해결 1부](https://chan9.tistory.com/158)  
+[동시성 문제 해결 2부](https://chan9.tistory.com/158)  
 1. Synchronized 키워드를 활용하는 방법
 2. Database Lock을 사용하는 방법
 3. Redis를 사용하는 방법  
+
+# 11월 29일
+## 동시성 문제를 해결하기 위한 방법 - Database Lock을 활용하기
+Optimistic lock은 별도의 lock을 잡지 않으므로 Pessimistic lock에 비해 성능 상 이점이 있다.  
+단점으로는 update가 실패했을 때 재시도 로직을 개발자가 직접 작성을 해줘야 한다는 점.  
+또한 충돌이 빈번하게 일어날 것이 예상된다면 Pessimistic lock을 이용하는 것이 성능상 더 좋을 수 있다.  
+```java
+package com.example.stock.facade;
+
+import com.example.stock.service.OptimisticLockStockService;
+import org.springframework.stereotype.Component;
+
+@Component
+public class OptimisticLockStockFacade {
+
+  private OptimisticLockStockService optimisticLockStockService;
+
+  public OptimisticLockStockFacade(OptimisticLockStockService optimisticLockStockService) {
+    this.optimisticLockStockService = optimisticLockStockService;
+  }
+
+  public void decrease(Long id, Long quantity) throws InterruptedException {
+   while (true) {
+     try {
+       optimisticLockStockService.decrease(id, quantity);
+
+       break; // 정상적으로 업데이트 된다면 update 후 break
+     } catch (Exception e) {
+        Thread.sleep(50); //수량 감소에 실패하면 50 millisecond 후에 재시도
+     }
+   }
+  }
+}
+
+```  
+
 
 
