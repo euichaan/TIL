@@ -74,6 +74,28 @@ public class OptimisticLockStockFacade {
 }
 
 ```  
+## Transaction 사용법(MySQL)
+```sql
+START TRANSACTION;
+```
+트랜잭션을 실행할 수 있다. 이때 COMMIT 방식은 수동 COMMIT으로 바뀐다.  
+```sql
+COMMIT;
+```  
+COMMIT 명령어를 통해 실제 데이터베이스에 적용되는 것을 알 수 있다.  
+```sql
+ROLLBACK;
+```  
+만약 트랜잭션의 내용을 실제 데이터베이스에 적용시키지 않고 싶다면 ROLLBACK 명령어를 사용하면 된다.  
+DROP 명령어 및 ALTER TABLE은 롤백 기능을 지원하지 않습니다. 해당 명령어는 바로 자동 COMMIT된다.  
+
+MySQL은 기본 COMMIT 방식을 바꿀 수 있다.
+```sql
+SET AUTOCOMMIT = 0; //자동 Commit Off
+SET AUTOCOMMIT = 1; //자동 Commit ON
+```  
+
+
 
 
 
