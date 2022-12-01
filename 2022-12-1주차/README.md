@@ -65,6 +65,13 @@ Stock findByIdWithPessimisticLock(Long id);
 |9|version == 0 true, 트랜잭션 1 커밋, version += 1||  
 |10||version == 0 false, 트랜잭션 **롤백**|  
 
+### 추가로 생각해볼 점
+외래키를 사용할 때 데드락이 발생할 수 있다. [외래키 사용 시 데드락](https://junghyungil.tistory.com/m/178)  
+낙관적 락의 경우 기존에 존재하던 데이터의 경우 효과적이지만, 새로 추가되는 데이터는 컨트롤할 수 없다는 단점이 있다.  
+낙관적 락 + 유니크 제약조건을 같이 거는 방법을 생각해 볼 수 있다.  
+낙관적 락의 경우 동시성이 발생하고 영속성 컨텍스트가 flush 될 때 update 쿼리가 나가면서 OptimisticLockingFailureException이 발생한다.  
+
+
 
 
 
