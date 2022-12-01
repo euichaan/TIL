@@ -24,6 +24,7 @@
 두 트랜잭션에서 모두 true가 나오게 돼 DB에 둘 다 저장되게 된다.  
 
 ## Pessimistic Lock(비관적 락)과 Optimistic Lock(낙관적 락)  
+### Pessimistic Lock
 비관적 락을 건다고 생각하고 아예 트랜잭션을 시작할 때 `xxxRepository.findById`에 아래 옵션을 건다고 가정하자.  
 ```java
 @Lock(value = LockModeType.PESSIMISTIC_WRITE)
@@ -32,8 +33,37 @@ Stock findByIdWithPessimisticLock(Long id);
 ```
 이 경우 `findById..`로 게시글을 찾을 때 `select ... from`이 아닌 `select ... for update`로 되고, 따라서 lock을 얻는다.  
 다른 트랜잭션에서 `findById...`를 하기 위해서는 트랜잭션 1이 끝날 때 까지 대기해야 한다.  
-<u>이렇게 트랜잭션에서 충돌이 날 것이라고 가정하고 미리 락을 걸어버리는 비관적 락 방법</u>으로 문제를 해결할 수도 있다.  
+**이렇게 트랜잭션에서 충돌이 날 것이라고 가정하고 미리 락을 걸어버리는 비관적 락 방법**으로 문제를 해결할 수도 있다.  
 하지만 비관적 락은 지나치게 고립성이 높아 성능이 많이 저하된다는 단점이 존재한다.  
+
+### Optimistic Lock
+낙관적 락을 걸게 되면 트랜잭션1에서 해당 Version을 업데이트하면서 커밋을 하기 때문에 트랜잭션2 에서 동시에 작업을  
+할 경우 커밋을 할 때 Version이 다르면 롤백되어 DB에 같은 좋아요가 2개 이상 쌓이지 않고 하나만 save되게 된다.  
+따라서 Optimistic Lock으로도 해당 이슈를 충분히 해결할 수 있다. 또한 DB에 직접적으로 락을 거는 것이 아닌,  
+애플리케이션 단에서 처리하는 것이므로 성능저하도 Pessimistic Lock에 비해 거의 일어나지 않는다고 판단했다.  
+```java
+  @Lock(value = LockModeType.OPTIMISTIC)
+  @Query("select b from Board b where b.id = :id")
+  Stock findByIdWithOptimisticLock(Long id);
+```
+또한 엔티티에 아래와 같이 @Version을 추가해주었다.  
+```java
+ @Version
+  private Long version;// Optimistic Lock 을 위해 추가된 필드
+```
+이렇게 될 경우 아래처럼 진행된다.
+|시퀀스|트랜잭션 1|트랜잭션 2|
+|------|---|---|
+|1|트랜잭션 1 시작||
+|2||트랜잭션 2 시작|
+|3|게시글 A 찾음, version = 0||
+|4||게시글 A 찾음, version = 0|
+|5|게시글 좋아요 기록 존재하지 않는가? true||
+|6||게시글 좋아요 기록 존재하지 않는가? true|
+|7|좋아요 수 증가, 게시글 좋아요 저장||
+|8||좋아요 수 증가, 게시글 좋아요 저장|  
+|9|version == 0 true, 트랜잭션 1 커밋, version += 1||  
+|10||version == 0 false, 트랜잭션 **롤백**|  
 
 
 
