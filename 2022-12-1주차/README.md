@@ -71,6 +71,13 @@ Stock findByIdWithPessimisticLock(Long id);
 낙관적 락 + 유니크 제약조건을 같이 거는 방법을 생각해 볼 수 있다.  
 낙관적 락의 경우 동시성이 발생하고 영속성 컨텍스트가 flush 될 때 update 쿼리가 나가면서 OptimisticLockingFailureException이 발생한다.  
 
+# 12월  2일
+## Named Lock
+이름을 가진 metadata locking. 이름을 가진 lock을 획득한 후 해제할때까지 다른 세션은 이 lock을  
+획득할 수 없도록 한다. 주의할 점으로는 transaction이 종료될 때 lock이 자동으로 해제되지 않습니다.  
+별도의 명령어로 해제를 수행해주거나 선점시간이 끝나야 해제됩니다. Pessimistic lock과 비슷한데  
+Pessimistic lock은 row나 table단위로 걸지만 Named lock은 metadata locking을 하는 방식입니다.  
+
 
 
 
