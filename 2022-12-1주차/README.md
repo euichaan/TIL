@@ -74,9 +74,9 @@ Stock findByIdWithPessimisticLock(Long id);
 # 12월  2일
 ## Named Lock
 이름을 가진 metadata locking. 이름을 가진 lock을 획득한 후 해제할때까지 다른 세션은 이 lock을  
-획득할 수 없도록 한다. 주의할 점으로는 transaction이 종료될 때 lock이 자동으로 해제되지 않습니다.  
+획득할 수 없도록 한다. 주의할 점으로는 transaction이 종료될 때 lock이 자동으로 해제되지 않는다.  
 별도의 명령어로 해제를 수행해주거나 선점시간이 끝나야 해제됩니다. Pessimistic lock과 비슷한데  
-Pessimistic lock은 row나 table단위로 걸지만 Named lock은 metadata locking을 하는 방식입니다.  
+Pessimistic lock은 row나 table단위로 걸지만 Named lock은 metadata locking을 하는 방식.  
 
 
 
