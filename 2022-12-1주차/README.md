@@ -81,4 +81,3 @@ Pessimistic lock은 row나 table단위로 걸지만 Named lock은 metadata locki
 
 
 
-
