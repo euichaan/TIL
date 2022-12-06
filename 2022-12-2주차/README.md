@@ -39,7 +39,7 @@ public class RedissonLockStockFacade {
 ```
 # 12월 6일
 ## 락이란? 스핀 락, 분산 락에 대해서 정리
-[락이란 무엇일까..?](https://chan9.tistory.com/159)
+[락이란 무엇일까..?](https://chan9.tistory.com/159)  
 Pessimistic Lock과 Optimistic Lock의 관심사는 `특정 엔티티에 대한 동시 접근 제어`이다.  
 즉, 동시성을 제어하기 위한 엔티티가 존재해야 한다.  
 
