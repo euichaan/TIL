@@ -37,3 +37,6 @@ public class RedissonLockStockFacade {
   }
 }
 ```
+# 12월 6일
+## 락이란? 스핀 락, 분산 락에 대해서 정리
+[락이란 무엇일까..?](https://chan9.tistory.com/159)
