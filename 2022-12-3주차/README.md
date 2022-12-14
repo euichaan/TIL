@@ -50,6 +50,16 @@ int solution3(int arr[]) {
 
 ## 트랜잭션
 트랜잭션이란 `한꺼번에 모두 수행되어야 할 일련의 연산들` 또는 `데이터베이스의 상태를 변화시키는 하나의 논리적 기능을 수행하기 위한 작업의 단위` 입니다.  
+  
+# 12월 14일
+## parseInt와 valueOf
+parseInt는 String 타입의 숫자를 int 타입의 문자열로 변환해줍니다.    
+문자가 섞여있다면 `NumberFormatException`이 발생합니다.  
+  
+parseInt의 리턴타입은 기본 자료형(int)입니다.  
+valueOf의 리턴타입은 객체입니다.  
+
+
 
 
 
