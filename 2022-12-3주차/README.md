@@ -135,6 +135,37 @@ Arrays.sort(array)는 array 배열의 Comparable을 구현한 compareTo() 메서
 ## String 클래스는..?
 String 클래스는 Comparable을 implements하여 compareTo() 메서드를 구현하고 있습니다.  
 
+## 컬렉션을 순회하면서 원소 삭제하기 
+자바의 공식 문서를 보면 Iterator의 remove를 사용하는 것이 컬렉션을 순회하면서 원소를 삭제할 수 있는 유일하게 안전한 방법  
+이라고 가이드하고 있습니다.  
+```java
+List<Character> letters = new ArrayList<>(
+    Arrays.asList('A', 'B', '1', '2', 'C', 'D', '3', 'E', '4', '5'));
+
+for (Iterator<Character> iter = letters.iterator(); iter.hasNext(); ) {
+  Character letter = iter.next();
+    if (Character.isDigit(letter)) {
+      iter.remove(); //숫자 원소 제거
+    }
+  }
+System.out.println(letters);
+
+```
+Java8에서는 다음과 같이 사용 가능합니다.  
+```java
+List<Character> letters = new ArrayList<>(
+    Arrays.asList('A', 'B', '1', '2', 'C', 'D', '3', 'E', '4', '5'));
+
+letters.removeIf(Character::isDigit);
+System.out.println(letters);
+```
+추가로 원본 리스트에 변경을 가하지 않고, 숫자 원소가 삭제된 새로운 리스트를 얻고 싶은 경우, 다음과 같이 스트림 API를 사용  
+할 수 있습니다.  
+```java
+List<Character> alphabets = letters.stream()
+    .filter(Character::isAlphabetic)
+    .collect(Collectors.toList());
+```
 
 
 
