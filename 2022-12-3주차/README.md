@@ -107,7 +107,35 @@ compare 객체 호출을 위해서 쓰지 않는 객체를 생성해야 하는 �
 객체를 비교하기 위해 Comparable 또는 Comparator를 쓴다는 것은 곧 사용자가 정의한 기준을 토대로 비교를 하여 양수, 0, 음수 중  
 하나가 반환된다는 것입니다.  
   
-Java에서의 정렬은 오름차순을 기준으로 합니다.  
+Java에서의 정렬은 오름차순을 기준으로 합니다. 따라서 규칙을 일반화할 수 있습니다.  
+음수일 경우 : **두 원소의 위치를 교환 안함**  
+양수일 경우 : **두 원소의 위치를 교환 함**  
+  
+Arrays.sort()에는 단순히 배열만 파라미터로 받는 것이 아니라 Comparator 또한 파라미터로 받기도 합니다.  
+간단하게 요약하자면, Comparator 파라미터로 넘어온 c의 비교 기준을 갖고 파라미터로 넘어온 객체배열 a를 정렬하겠다는 의미입니다.  
+
+```java
+Arrays.sort(array, comp);
+```
+이런 형태로도 쓸 수 있다는 것입니다.  
+Arrays.sort(array)는 array 배열의 Comparable을 구현한 compareTo() 메서드를 활용하여 비교 및 정렬을 하게 됩니다.  
+반대로 Arrays.sort(array, Comparator<? super T> c)의 경우 파라미터로 넘겨준 c를 기준으로 비교 및 정렬을 하게 됩니다.  
+만약 c가 null이라면 `sort(array)`를 호출합니다.  
+  
+즉, Comparator로 넘겨받은 인자가 null일 경우 Arrays.sort(Object[] a)를 호출하여 a배열의 Comparable을 구현한 compareTo()  
+로 비교 및 정렬을 한다는 것입니다.  
+  
+반대로 c가 null이 아니라면 Comparator을 구현한 객체의 compare() 메서드를 사용하여 비교 및 정렬을 한다는 말입니다.  
+  
+보통 Comparable은 가장 기본적인 설정(보통 오름차순)으로 구현하는 경우가 많고, Comparator는 여러개를 생성할 수 있다보니  
+특별한 정렬을 원할 때 많이 쓰입니다.  
+  
+쉽게 말해 Comparable은 기본 순서를 정의하는데 사용되며, Comparator는 특별한 기준의 순서를 정의할 때 사용한다는 것입니다.  
+
+## String 클래스는..?
+String 클래스는 Comparable을 implements하여 compareTo() 메서드를 구현하고 있습니다.  
+
+
 
 
   
