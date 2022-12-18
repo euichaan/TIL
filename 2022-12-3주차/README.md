@@ -167,7 +167,7 @@ List<Character> alphabets = letters.stream()
     .collect(Collectors.toList());
 ```
 ## 12월 18일
-### String의 isEmpty와 
+### String의 isEmpty와 isBlank 
 
 
   
