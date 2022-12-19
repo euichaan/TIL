@@ -166,9 +166,6 @@ List<Character> alphabets = letters.stream()
     .filter(Character::isAlphabetic)
     .collect(Collectors.toList());
 ```
-## 12월 18일
-### String의 isEmpty와 isBlank 
-
 
   
 
