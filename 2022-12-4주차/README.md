@@ -137,4 +137,57 @@ char 자료형 기준으로 127에 1을 더하면, 컴퓨터는 시킨 대로 �
 01111111(127) + 1 = 10000000 즉, -128이 됩니다.  
   
 Integer Overflow를 막는 방법은 아주 쉽습니다. 각 자료형의 범위에 맞는 값을 가지게끔 연산을 시키면 됩니다.  
+만약 문제에서 unsigned long long 범위를 넘어서는 수를 저장할 것을 요구한다면 string을 활용해서 저장해야 합니다.  
+  
+# 12월 21일
+## 실수 자료형을 사용할 때 주의할 점 
+```c++
+#include <bits/stdc++.h>
 
+using namespace std;
+typedef long long ll;  //-2^63 ~ 2^63-1
+typedef unsigned long long llu;
+typedef pair<int, int> pii;
+typedef pair<double, double> pdd;
+typedef pair<int, pii> piii;
+typedef pair<ll, ll> pll;
+typedef pair<ll, int> pli;
+typedef pair<int, ll> pil;
+typedef pair<string, int> psi;
+typedef pair<int, char> pic;
+int INF = 1e9 + 7;
+//512MB = 1.2억개 int
+//if(nx<0||nx>=n||ny<0||ny>=m) continue;
+/*int dz[6]={1,-1,0,0,0,0};
+int dx[6]={0,0,1,-1,0,0};
+int dy[6]={0,0,0,0,1,-1};*/ // 3차원 bfs
+#define X first
+#define Y second
+int dx[4] = {1, 0, -1, 0};
+int dy[4] = {0, 1, 0, -1};
+
+int main() {
+  ios::sync_with_stdio(false);
+  cin.tie(nullptr);
+
+  //fraction field가 유한하기 때문에
+  if (0.1 + 0.1 + 0.1 == 0.3) cout << "true";
+  else cout <<"no no ...";
+
+  //double에 long long 범위의 정수를 함부로 담으면 안된다.
+  //10의 18승 + 1 과 10의 18승을 구분 불가능
+  double a = 100000000000000001;
+  double b = 100000000000000000;
+  if (a == b) cout << "wow...";
+  else cout << "a != b";
+
+  //실수를 비교할 때는 등호를 사용하면 안된다.
+  //대략 1e-12 이하면 동일하다고 처리하는 것이 안전하다.
+  double c = 0.1 + 0.1 + 0.1;
+  double d = 0.3;
+  if (c == d) cout << "same 1\n";
+  if (abs(a-b) < 1e-12) cout << "same 2\n";
+
+  return 0;
+}
+```
