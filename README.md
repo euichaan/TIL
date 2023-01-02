@@ -9,6 +9,6 @@
 ### [2022년 12월 2주차](https://github.com/euichaan/TIL/tree/main/2022-12-2%EC%A3%BC%EC%B0%A8)
 ### [2022년 12월 3주차](https://github.com/euichaan/TIL/tree/main/2022-12-3%EC%A3%BC%EC%B0%A8)
 ### [2022년 12월 4주차](https://github.com/euichaan/TIL/tree/main/2022-12-4%EC%A3%BC%EC%B0%A8)
-### [2023년 1월 1주차](https://github.com/euichaan/TIL/tree/main/2023-11-1%EC%A3%BC%EC%B0%A8)
+### [2023년 1월 1주차](https://github.com/euichaan/TIL/tree/main/2023-1-1%EC%A3%BC%EC%B0%A8)
 
 
