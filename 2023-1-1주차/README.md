@@ -56,6 +56,155 @@ cin/cout의 입출력으로 인한 시간초과를 막기 위해서 두 명령�
   
 추가적으로, endl은 개행문자를 출력하고 출력 버퍼를 비우라는 명령입니다.  
 어차피 프로그램이 종료될 때 출력이 어떻게 생겼는지를 가지고 채점을 진행하니까 중간 버퍼를 지우라고 명령을 줄 필요가 없습니다.  
+  
+# 1월 4일 
+## Optional
+객체를 Optional 객체로 감싸기 위해서는 Optional에서 제공하는 of와 ofNullable 메서드를 사용합니다.  
+둘의 차이점은 **of는 인자로서 null값을 받지 않는다는 것이고 ofNullable은 null값을 허용한다는 것입니다.**  
+```java
+@Test
+  public void givenNonNull_whenCreatesNonNullable() throws Exception {
+    String name = "Chan";
+    Optional<String> opt = Optional.of(name);
+    assertEquals("Optional[Chan]", opt.toString());
+  }
+```
+아래 코드를 보면 null값을 of 메서드의 입력으로 받을 시 NullPointerException을 일으킵니다.  
+```java
+@Test
+  public void givenNull_whenThrowsErrorOnCreate() throws Exception {
+    String name = null;
+    assertThrows(NullPointerException.class, () -> {
+      Optional<String> opt = Optional.of(name);
+    }); //assertThrows 에 필요한 클래스를 등록하고, 람다식으로 예외를 던질 실행문을 작성 
+```
+junit4의 @Test(expected = NullPointerException.class)와는 다르게 assertThrows에 필요한 클래스를 등록하고,  
+람다식으로 예외를 던질 실행문을 작성해야 합니다.  
+  
+ofNullable은 일반 객체뿐만 아니라 null값까지 입력으로 받을 수 있다는 것을 아래 코드로 확인해 볼 수 있습니다.  
+```java
+@Test
+public void givenNonNull_whenCreatesNullable() throws Exception {
+  String name = "Chan";
+  Optional<String> opt = Optional.ofNullable(name);
+  assertEquals("Optional[Chan]", opt.toString());
+}
+  
+@Test
+public void givenNull_whenCreatesNullable() throws Exception {
+  String name = null;
+  Optional<String> opt = Optional.ofNullable(name);
+  assertEquals("Optional.empty", opt.toString());
+}
+```
+isPresent 메서드로 현재 Optional이 **보유한 값이 null인지 아닌지를 확인할 수 있습니다**.    
+```java
+@Test
+  public void givenOptional_whenIsPresentWorks() throws Exception {
+    Optional<String> opt = Optional.of("Chan");
+    assertTrue(opt.isPresent());
+
+    opt = Optional.ofNullable(null);
+    assertFalse(opt.isPresent());
+  }
+```
+Optional 메서드를 사용하면 if를 이용한 null 체크를 대체할 수 있습니다.  
+if를 이용한 null 체크가 좋지 않은 이유는 크게 2가지가 있습니다.  
+1. 코드가 길어짐에 따라 코드의 가독성이 떨어집니다.    
+2. 각 변수마다 null을 체크해야하기 때문에 실수를 유발할 가능성이 높아집니다.  
+  
+if의 null 체크 방식을 다음과 같이 ifPresent로 간결하게 해결할 수 있습니다.  
+```java
+@Test
+public void givenOptional_whenIfPresentWorks() throws Exception {
+  Optional<String> opt = Optional.of("Chan");
+  opt.ifPresent(name -> System.out.println(name.length())); //Consumer
+}
+```
+참고로, ifPresent의 파라미터로는 Consumer<? super T> action 이 옵니다. Consumer는 T -> void 의 함수 디스크립터를 가집니다.  
+  
+## orElse, orElseGet으로 Optional 값 가져오기 
+if에서 null값이 아닌 경우의 처리를 else 키워드 이하의 코드로 해결하지만 Optional에서는 orElse로 간단하게 해결할 수 있습니다.  
+```java
+@Test
+public void whenOrElseWorks() throws Exception {
+  String nullName = null;
+  String name = Optional.ofNullable(nullName).orElse("Chan");
+  assertEquals("Chan", name);
+}
+```
+orElse와 orElseGet이 많이 사용되는 이유는 null값 체크를 할 수 있음과 동시에 null값일 경우 간단한 코드로 처리할 수 있어  
+코드의 가독성이 좋아지고 코드 생산성이 올라간다는 장점이 있어서입니다.  
+  
+주의할 부분은 null일 때 어떤 값을 쓸 것이냐를 처리하는 로직에 함수를 사용했을 때입니다.  
+orElseGet은 가지고 있는 값이 null일 경우에만 orElseGet에 주어진 함수를 실행합니다.  
+하지만 orElse는 null값 유무와 상관없이 사용하게 되어있습니다.  
+  
+정리하면 다음과 같습니다.  
+- orElse 메서드는 해당 값이 null 이든 아니든 관계없이 항상 불립니다.  
+- orElseGet 메서드는 해당 값이 null 일 때만 불립니다.  
+  
+또한 get과 orElseThrow를 이용해서 Optional의 값을 얻을 수 있습니다.(대체로 권장X)  
+```java
+@Test
+public void orElseThrowEx() throws Exception {
+  String nullName = null;
+  assertThrows(IllegalArgumentException.class, () -> {
+  String name = Optional.ofNullable(nullName).orElseThrow(IllegalArgumentException::new);
+  });
+}
+  
+@Test
+public void givenOptionalWithNull_whenGetThrowsException() throws Exception {
+  Optional<String> opt = Optional.ofNullable(null);
+  assertThrows(NoSuchElementException.class, () -> {
+  String name = opt.get();
+  });
+}
+```
+
+## 예제
+```java
+  @Test
+  public void givenOptional_whenMapWorks() throws Exception {
+    List<String> companyNames = Arrays.asList("Samsung", "SK", "NAVER", "Daum");
+    Optional<List<String>> listOptional = Optional.of(companyNames);
+
+    int size = listOptional.map(List::size).orElse(0);
+    assertEquals(4, size);
+  }
+  
+  @Test
+  public void givenOptional_whenMapWorks2() throws Exception {
+    String name = "Chan";
+    Optional<String> nameOptional = Optional.ofNullable(name);
+    int len = nameOptional.map(String::length).orElse(0);
+    assertEquals(4, len);
+  }
+
+  @Test
+  public void givenOptional_whenMapWorksWithFilter() throws Exception {
+    String password = " password ";
+    Optional<String> passOpt = Optional.of(password);
+    boolean correctPassword = passOpt.filter(
+        pass -> pass.equals("password")).isPresent();
+    assertFalse(correctPassword);
+
+    correctPassword = passOpt
+        .map(String::trim)
+        .filter(pass -> pass.equals("password"))
+        .isPresent();
+
+    assertTrue(correctPassword);
+  }
+```
+Optional.of는 null이 아님이 확실할 때만 사용, null이면 NPE가 터집니다.  
+Optional.ofNullable은 null일 수도 있을 때만 사용해야 하며, null이 아님이 확실하면 of를 사용해야 합니다.  
+
+
+
+
+
 
 
   
