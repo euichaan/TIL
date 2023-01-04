@@ -200,7 +200,99 @@ public void givenOptionalWithNull_whenGetThrowsException() throws Exception {
 ```
 Optional.of는 null이 아님이 확실할 때만 사용, null이면 NPE가 터집니다.  
 Optional.ofNullable은 null일 수도 있을 때만 사용해야 하며, null이 아님이 확실하면 of를 사용해야 합니다.  
+  
+# 1월 4일
+백준 2234번 성곽 풀이
+```c++
+#include <bits/stdc++.h>
 
+using namespace std;
+typedef long long ll;  //-2^63 ~ 2^63-1
+typedef unsigned long long llu;
+typedef pair<int, int> pii;
+typedef pair<double, double> pdd;
+typedef pair<int, pii> piii;
+typedef pair<ll, ll> pll;
+typedef pair<ll, int> pli;
+typedef pair<int, ll> pil;
+typedef pair<string, int> psi;
+typedef pair<int, char> pic;
+int INF = 1e9 + 7;
+//512MB = 1.2억개 int
+//if(nx<0||nx>=n||ny<0||ny>=m) continue;
+/*int dz[6]={1,-1,0,0,0,0};
+int dx[6]={0,0,1,-1,0,0};
+int dy[6]={0,0,0,0,1,-1};*/ // 3차원 bfs
+#define X first
+#define Y second
+int dx[4] = {0, -1, 0, +1};
+int dy[4] = {-1, 0, +1, 0};
+int m, n; // m은 열, n은 행
+int roomCnt, roomSize;
+int board[52][52];
+bool vis[52][52];
+
+/**
+ * 1. 이 성에 있는 방의 개수
+ * 2. 가장 넓은 방의 크기
+ * 3. 하나의 벽을 제거하여 얻을 수 있는 가장 넓은 방의 크기
+ */
+int bfs(int i, int j) {
+  queue<pair<int, int>> q;
+  q.push({i, j});
+  vis[i][j] = 1;
+  int size = 1;
+  while (!q.empty()) {
+    auto cur = q.front();
+    q.pop();
+    for (int dir = 0; dir < 4; dir++) {
+      int nx = cur.X + dx[dir];
+      int ny = cur.Y + dy[dir];
+      if (nx < 0 || ny < 0 || nx >= n || ny >= m) continue;
+      if (vis[nx][ny]) continue; // 이미 방문한 좌표. 건너뜀
+      if (board[cur.X][cur.Y] & 1 << dir) continue; // 벽이 있다면 건너뜀
+      vis[nx][ny] = 1;
+      q.push({nx, ny});
+      size++;
+    }
+  }
+  return size;
+}
+
+int main() {
+  ios::sync_with_stdio(0);
+  cin.tie(0);
+  cin >> m >> n;
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < m; j++) {
+      cin >> board[i][j];
+    }
+  }
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < m; j++) {
+      if (!vis[i][j]) {
+        roomSize = max(roomSize, bfs(i, j));
+        roomCnt++;
+      }
+    }
+  }
+  cout << roomCnt << '\n';
+  cout << roomSize << '\n';
+
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < m; j++) {
+      for (int dir = 0; dir < 4; dir++) {
+        memset(vis, false, sizeof(vis));
+        board[i][j] = board[i][j] - (1 << dir);
+        roomSize = max(roomSize, bfs(i, j));
+        board[i][j] = board[i][j] + (1 << dir);
+      }
+    }
+  }
+  cout << roomSize << '\n';
+  return 0;
+}
+```
 
 
 
