@@ -57,7 +57,7 @@ cin/cout의 입출력으로 인한 시간초과를 막기 위해서 두 명령�
 추가적으로, endl은 개행문자를 출력하고 출력 버퍼를 비우라는 명령입니다.  
 어차피 프로그램이 종료될 때 출력이 어떻게 생겼는지를 가지고 채점을 진행하니까 중간 버퍼를 지우라고 명령을 줄 필요가 없습니다.  
   
-# 1월 4일 
+# 1월 3일 
 ## Optional
 객체를 Optional 객체로 감싸기 위해서는 Optional에서 제공하는 of와 ofNullable 메서드를 사용합니다.  
 둘의 차이점은 **of는 인자로서 null값을 받지 않는다는 것이고 ofNullable은 null값을 허용한다는 것입니다.**  
@@ -338,6 +338,45 @@ public void whenConvertFromListToMap() {
     assertTrue(convertToMap.listToMap(bookList).size() == 3);
 }
 ```
+위의 예는 해결했지만 중복 키는 어떻게 처리할까요?  
+각 책의 출시 연도를 키로 잡아보겠습니다.  
+```java
+public Map<Integer, Book> listToMapWithDupKeyError(List<Book> books) {
+    return books.stream().collect(Collectors.toMap(Book::getReleaseYear, Function.identity()));
+}
+```
+Funtion.identity()는 파라미터를 변형없이 그대로 리턴하는 Function입니다.  
+test를 돌려보면 IllegalStateException이 발생하는 것을 알 수 있습니다.  
+```java
+@Test
+  public void whenMapHasDuplicateKey_without_merge_function_then_runtime_exception() {
+    assertThrows(IllegalStateException.class, () -> {
+      convertToMap.listTOMapWithDupKeyError(bookList);
+    });
+  }
+```
+이를 해결하려면 추가 매개 변수인 mergeFunction과 함께 다른 메서드를 사용해야 합니다.  
+```java
+Collector<T, ?, M> toMap(Function<? super T, ? extends K> keyMapper,
+  Function<? super T, ? extends U> valueMapper,
+  BinaryOperator<U> mergeFunction)
+```
+충돌의 경우 기존 항목을 유지함을 나타내는 병합 함수를 소개하겠습니다.  
+```java
+ public Map<Integer, Book> listToMapWithDupKey(List<Book> books) {
+      return books.stream().collect(Collectors.toMap(Book::getReleaseYear, Function.identity(), (existing, replacement) -> existing));
+  }
+```
+테스트 코드를 작성한 후 통과한 것을 확인할 수 있습니다. (이전 것이 먼저 나오는 결과)  
+```java
+@Test
+  public void whenMapHasDuplicateKeyThenMergeFunctionHandlesCollision() {
+    Map<Integer, Book> booksByYear = convertToMap.listToMapWithDupKey(bookList);
+    assertEquals(2, booksByYear.size());
+    assertEquals("0395489318", booksByYear.get(1954).getIsbn());
+  }
+```
+
 
 
 
