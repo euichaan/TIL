@@ -292,7 +292,57 @@ int main() {
   cout << roomSize << '\n';
   return 0;
 }
+```  
+  
+# 1월 5일
+## Collectors의 toMap()
+Book 클래스 정의는 다음과 같습니다.  
+```java
+package com.me.modernJavainAction.Collectors;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter @Setter
+@AllArgsConstructor
+public class Book {
+  private String name;
+  private int releaseYear;
+  private String isbn;
+
+}
 ```
+그리고 책 목록을 만들었습니다.  
+```java
+List<Book> bookList = new ArrayList<>();
+    bookList.add(new Book("The Fellowship of the Ring", 1954, "0395489318"));
+    bookList.add(new Book("The Two Towers", 1954, "0345339711"));
+    bookList.add(new Book("The Return of the King", 1955, "0618129111"));
+```
+먼저, toMap() 메서드의 다음 오버로드를 사용합니다.  
+```java
+Collector<T, ?, Map<K,U>> toMap(Function<? super T, ? extends K> keyMapper,
+  Function<? super T, ? extends U> valueMapper)
+```
+이 메서드를 활용해서 맵의 key와 value를 얻는 방법을 알 수 있습니다.  
+```java
+public Map<String, String> listToMap(List<Book> books) {
+    return books.stream().collect(Collectors.toMap(Book::getIsbn, Book::getName));
+  }
+```
+그리고 test 코드를 통해서 그것이 작동하는지 확인할 수 있습니다.  
+```java
+@Test
+public void whenConvertFromListToMap() {
+    assertTrue(convertToMap.listToMap(bookList).size() == 3);
+}
+```
+
+
+
+
+
 
 
 
