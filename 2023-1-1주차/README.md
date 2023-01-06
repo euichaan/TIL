@@ -376,6 +376,48 @@ Collector<T, ?, M> toMap(Function<? super T, ? extends K> keyMapper,
     assertEquals("0395489318", booksByYear.get(1954).getIsbn());
   }
 ```
+  
+# 1월 6일
+## Map 종류들
+기본적으로 toMap() 메서드는 HashMap을 반환합니다.  
+하지만 다른 Map 구현을 반환 할 수 있습니다.  
+```java
+Collector<T, ?, M> toMap(Function<? super T, ? extends K> keyMapper,
+  Function<? super T, ? extends U> valueMapper,
+  BinaryOperator<U> mergeFunction,
+  Supplier<M> mapSupplier)
+```
+여기서 mapSupplier는 결과와 함께 비어있는 새 맵을 반환하는 함수입니다.  
+동일한 예제를 사용하여 ConcurrentHashMap을 반환하는 mapSupplier 함수를 추가해 보겠습니다.  
+```java
+public Map<Integer, Book> listToConcurrentMap(List<Book> books) {
+      return books.stream().collect(Collectors.toMap(Book::getReleaseYear, Function.identity(),
+          (o1, o2) -> o1, ConcurrentHashMap::new));
+    }
+```
+계속해서 코드를 테스트하겠습니다.  
+```java
+@Test
+  public void whenCreateConcurrentHashMap() throws Exception {
+      assertTrue(convertToMap.listToConcurrentMap(bookList) instanceof ConcurrentHashMap);
+  }
+```
+마지막으로 toMap()은 HashMap을 반환할 것입니다.  
+TreeMap 은 기본적으로 키의 자연스러운 순서에 따라 정렬 되기 때문에 직접 Book을 명시적으로 정렬할 필요가 없습니다.  
+```java
+//TreeMap -> 키의 자연스러운 순서에 의해 정렬. 명시적으로 정렬할 필요 없음
+    public TreeMap<String, Book> listToSortedMap(List<Book> books) {
+      return books.stream()
+          .collect(Collectors.toMap(Book::getName, Function.identity(), (o1, o2) -> o1, TreeMap::new));
+    }
+```
+테스트 코드는 다음과 같습니다.  
+```java
+ @Test
+  public void whenMapIsSorted() throws Exception {
+      assertTrue(convertToMap.listToSortedMap(bookList).firstKey().equals("The Fellowship of the Ring"));
+  }
+```
 
 
 
