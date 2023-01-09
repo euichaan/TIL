@@ -417,7 +417,7 @@ TreeMap 은 기본적으로 키의 자연스러운 순서에 따라 정렬 되�
   public void whenMapIsSorted() throws Exception {
       assertTrue(convertToMap.listToSortedMap(bookList).firstKey().equals("The Fellowship of the Ring"));
   }
-```
+
 
 
 
