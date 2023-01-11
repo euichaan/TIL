@@ -221,5 +221,120 @@ insert는 iterator가 가리키는 곳 앞에 값을 삽입합니다. erase는 �
 => Floyd's cycle-finding algorithm. 한 칸씩 가는 커서와 두 칸씩 가는 커서를 동일한 시작점에서 출발시키면  
 사이클이 있을 경우 두 커서는 반드시 만나게 됩니다. 반대로 사이클이 없으면 두 커서가 만나지 않고 연결 리스트의 끝에 도달합니다.  
 공간복잡도 O(1), 시간복잡도 O(N)  
+  
+# 1월 11일
+## 연결 리스트 구현 : 단일 연결 리스트
+```c++
+//
+// Created by 황의찬 on 2023/01/11.
+//
+#pragma once
+#include <iostream>
+struct Node {
+    int data;
+    struct Node* link;
+};
+
+struct HeadNode {
+    Node* head;
+};
+
+class SingleLinkedlist {
+public:
+    //리스트 생성, 헤드 노드
+    HeadNode* createList() {
+      HeadNode *H = new HeadNode;
+      H->head = nullptr;
+      return H;
+    }
+    //==리스트의 마지막에 노드 삽입==//
+    void addLastNode(HeadNode* H, int x) {
+      Node* newNode = new Node;
+      Node* lastNode;
+      newNode->data = x;
+      newNode->link = nullptr;
+      if (H->head == nullptr) { //리스트가 비어있을 경우
+         H->head = newNode;
+        return;
+      }
+      //리스트가 비어있지 않을 경우
+      lastNode = H->head;
+      while (lastNode->link != nullptr) lastNode = lastNode->link; //연결리스트의 마지막 노드를 찾는다
+      lastNode->link = newNode;
+    }
+
+
+    void deleteLastNode(HeadNode *H) {
+      Node* prevNode; //삭제되는 노드의 이전 노드
+      Node* deleteNode; //삭제되는 노드
+      if (H->head == nullptr) return; //리스트가 빈 경우
+      if (H->head->link == nullptr) { //헤드노드 한 개만 가진 경우
+        delete H->head;
+        H->head = nullptr;
+        return;
+      }
+      else { //리스트에 노드 여러 개 있는 경우
+        prevNode = H->head;
+        deleteNode = H->head->link;
+        while (deleteNode->link != nullptr) {
+          prevNode = deleteNode;
+          deleteNode = prevNode->link;
+        }
+        free(deleteNode); //마지막 노드의 메모리 공간을 반환
+        prevNode->link = nullptr;
+      }
+    }
+    void addThisNode(HeadNode* H, int afterThisData, int data) {
+      Node* prevNode;//삽입하려는 노드의 이전 노드
+      prevNode = H->head;
+
+      while (prevNode->data != afterThisData) {
+        prevNode = prevNode->link;
+      }
+      Node* newNode = new Node;
+      newNode->data = data;
+      newNode->link = prevNode->link;
+      prevNode->link = newNode;
+      return;
+    }
+
+    void deleteThisNode(HeadNode* H, int delData) {
+      Node* deleteNode;
+      Node* prevNode;
+      prevNode = H->head;
+      while (prevNode->link->data != delData) {
+        prevNode = prevNode->link;
+      }
+      deleteNode = prevNode->link;
+      prevNode->link = deleteNode->link;
+      free(deleteNode);
+      std::cout << delData << "데이터 값을 가진 노드 삭제 완료" << '\n';
+    }
+
+    void searchNode(HeadNode* H, int findData) {
+      Node* findNode = H->head;
+      while (findNode->data != findData) {
+        findNode = findNode->link;
+      }
+      std::cout << findData << " 데이터 검색 성공" << '\n';
+    }
+
+    void printList(HeadNode* L) {
+      Node* p;
+      std::cout << "연결리스트 목록 = ( ";
+      p = L->head;
+      while (p != nullptr) {
+        std::cout << p->data;
+        p = p->link;
+        if (p != nullptr) std::cout << " --> ";
+      }
+      std::cout << " )" << '\n';
+    }
+};
+```
+## 연결 리스트 구현 : 이중 연결 리스트
+
+## 연결 리스트 구현 : Java
+
 
 
