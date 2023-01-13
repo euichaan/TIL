@@ -338,6 +338,9 @@ public:
 + 객체는 다른 객체와 협력하기 위해 메시지를 전송하고, 메시지를 수신한 객체는 메시지를 처리하는 데 적합한 메서드를 자율적으로 선택한다.  
   
 # 1월 13일 
+## JUnit 5 배우기
+[JUnit5란?](https://chan9.tistory.com/164)  
+  
 ## 코딩테스트용 연결 리스트 구현
 ```c++
 const int MX = 1000005;
@@ -422,4 +425,108 @@ int main(void) {
   erase_test();
 }
 ```
+## 스택
+자료구조에서의 스택 : 한쪽 끝에서만 원소를 넣거나 뺄 수 있는 자료구조입니다.(프링글스 통과 비슷함)  
+FILO(First In Last Out) : 구조적으로 먼저 들어간 원소가 제일 나중에 나오게 됩니다.  
+스택, 큐, 덱을 묶어 Restricted Structure라고 부르기도 합니다.  
+  
+## 스택의 성질
+1. 원소의 추가가 O(1)  
+2. 원소의 제거가 O(1)  
+3. 제일 상단의 원소 확인이 O(1)  
+4. 제일 상단이 아닌 나머지 원소들의 확인/변경이 원칙적으로 불가능  
+원래 스택이라는 자료구조는 원소의 추가/제거/제일 상단의 원소 확인이라는 기능만 제공하는 자료구조입니다.  
+  
+## 스택 구현 : 배열을 이용
+```c++
+const int MX = 1000005;
+int dat[MX];
+int pos = 0;
+```
+스택의 값들은 dat의 0번지, 즉 dat[0]부터 저장되고 pos는 다음에 원소가 추가될 때 삽입해야하는 곳을 가리킵니다.  
+pos의 값이 스택의 길이, 즉 스택 내의 원소 수를 의미합니다.  
+```c++
+#include <bits/stdc++.h>
+
+using namespace std;
+typedef long long ll;  //-2^63 ~ 2^63-1
+typedef unsigned long long llu;
+typedef pair<int, int> pii;
+typedef pair<double, double> pdd;
+typedef pair<int, pii> piii;
+typedef pair<ll, ll> pll;
+typedef pair<ll, int> pli;
+typedef pair<int, ll> pil;
+typedef pair<string, int> psi;
+typedef pair<int, char> pic;
+int INF = 1e9 + 7;
+//512MB = 1.2억개 int
+//if(nx<0||nx>=n||ny<0||ny>=m) continue;
+/*int dz[6]={1,-1,0,0,0,0};
+int dx[6]={0,0,1,-1,0,0};
+int dy[6]={0,0,0,0,1,-1};*/ // 3차원 bfs
+#define X first
+#define Y second
+int dx[4] = {1, 0, -1, 0};
+int dy[4] = {0, 1, 0, -1};
+const int MX = 1000005;
+int dat[MX];
+int pos = 0;
+void push(int x){
+  dat[pos++] = x;
+}
+
+void pop(){
+  pos--;
+}
+
+int top(){
+  return dat[pos-1];
+}
+
+void test(){
+  push(5); push(4); push(3);
+  cout << top() << '\n'; // 3
+  pop(); pop();
+  cout << top() << '\n'; // 5
+  push(10); push(12);
+  cout << top() << '\n'; // 12
+  pop();
+  cout << top() << '\n'; // 10
+}
+
+int main() {
+  ios::sync_with_stdio(0);
+  cin.tie(0);
+  test();
+
+  return 0;
+}
+```
+## STL stack
+```c++
+#include <bits/stdc++.h>
+using namespace std;
+int main() {
+  ios::sync_with_stdio(0);
+  cin.tie(0);
+  stack<int> s;
+  s.push(10);
+  s.push(20);
+  s.push(30);
+  cout << s.size() << '\n'; // 3
+  if (s.empty()) cout << "S is empty\n";
+  else cout <<"S is not empty\n";
+  s.pop(); // 10 20
+  cout <<s.top() << '\n'; //20
+  s.pop(); // 10
+  cout <<s.top() << '\n'; //10
+  s.pop();
+  if (s.empty()) cout << "S is empty\n";
+  else cout <<"S is not empty\n";
+  return 0;
+}
+```
+스택이 비어있는데 top을 호출하면 런타임 에러가 발생합니다. 스택이 비어있는데 pop을 호출해도 마찬가지입니다.  
+그렇기 때문에 스택이 비어있을 때는 top이나 pop을 호출하지 않도록 해야합니다.  
 
