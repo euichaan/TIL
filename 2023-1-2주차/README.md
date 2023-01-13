@@ -329,9 +329,6 @@ public:
     }
 };
 ```
-## 연결 리스트 구현 : 이중 연결 리스트
-
-## 연결 리스트 구현 : Java
 
 # 1월 12일 
 ## 객체지향의 사실과 오해 - 객체지향의 본질
@@ -339,7 +336,90 @@ public:
 + 자율적인 객체란 상태와 행위를 함께 지니며 스스로 자기 자신을 책임지는 객체를 의미한다.  
 + 객체는 시스템의 행위를 구현하기 위해 다른 객체와 협력한다. 각 객체는 협력 내에서 정해진 역할을 수행하며 역할은 관련된 책임의 집합이다.  
 + 객체는 다른 객체와 협력하기 위해 메시지를 전송하고, 메시지를 수신한 객체는 메시지를 처리하는 데 적합한 메서드를 자율적으로 선택한다.  
+  
+# 1월 13일 
+## 코딩테스트용 연결 리스트 구현
+```c++
+const int MX = 1000005;
+int dat[MX], pre[MX], nxt[MX];
+int unused = 1;
+int main() {
+  ios::sync_with_stdio(0);
+  cin.tie(0);
+  fill(pre, pre+MX, -1);
+  fill(nxt, nxt+MX, -1);
+  
+  return 0;
+}
+```
+dat[i]는 i번째 원소의 값, pre[i]는 i번째 원소에 대해 이전 원소의 인덱스, nxt[i]는 다음 원소의 인덱스입니다.  
+pre나 nxt의 값이 -1이면 해당 원소의 이전/다음 원소가 존재하지 않는다는 의미입니다.  
+unused는 현재 사용되지 않는 인덱스, 즉 새로운 원소가 들어갈 수 있는 인덱스이고 원소가 추가된 이후에는 1씩 증가될 것입니다.  
+  
+특별히 0번지는 연결 리스트의 시작 원소로 고정되어 있습니다. 0번지는 값이 들어가지 않고 시작점을 나타내기 위한 dummy node입니다.  
+전체 코드는 다음과 같습니다.  
+```c++
+#include <bits/stdc++.h>
+using namespace std;
+//pre[i]는 이전 원소의 인덱스, nxt[i]는 다음 원소의 인덱스
+const int MX = 1000005;
+int dat[MX], pre[MX], nxt[MX];
+int unused = 1;
 
+void insert(int addr, int num){ //addr 번지 뒤에 num 추가
+  dat[unused] = num; //새로운 원소를 생성
+  pre[unused] = addr; //새 원소의 pre 값에 삽입할 위치의 주소를 대입
+  nxt[unused] = nxt[addr]; //새 원소의 nxt 값에 삽입할 위치의 nxt 값을 대입
+  if (nxt[addr] != -1) pre[nxt[addr]] = unused; //삽입할 위치의 nxt값과 삽입할 위치의 다음 원소의 pre값을 새 원소로 변경
+  nxt[addr] = unused;
+  unused++;
+}
 
+void erase(int addr){
+    nxt[pre[addr]] = nxt[addr];
+    if (nxt[addr] != -1) pre[nxt[addr]] = pre[addr];
+}
 
+void traverse(){
+  int cur = nxt[0];
+  while (cur != -1) {
+    cout << dat[cur] << ' ';
+    cur = nxt[cur];
+  }
+  cout <<"\n\n";
+}
+
+void insert_test(){
+  cout << "****** insert_test *****\n";
+  insert(0, 10); // 10(address=1)
+  traverse();
+  insert(0, 30); // 30(address=2) 10
+  traverse();
+  insert(2, 40); // 30 40(address=3) 10
+  traverse();
+  insert(1, 20); // 30 40 10 20(address=4)
+  traverse();
+  insert(4, 70); // 30 40 10 20 70(address=5)
+  traverse();
+}
+
+void erase_test(){
+  cout << "****** erase_test *****\n";
+  erase(1); // 30 40 20 70
+  traverse();
+  erase(2); // 40 20 70
+  traverse();
+  erase(4); // 40 70
+  traverse();
+  erase(5); // 40
+  traverse();
+}
+
+int main(void) {
+  fill(pre, pre+MX, -1);
+  fill(nxt, nxt+MX, -1);
+  insert_test();
+  erase_test();
+}
+```
 
