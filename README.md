@@ -13,7 +13,7 @@
 ### [2023년 1월 2주차](https://github.com/euichaan/TIL/tree/main/2023-1-2%EC%A3%BC%EC%B0%A8)  
   
 1월 3주차부터 분류로 변경  
----  
+  
 ## Test
-### [Clean Code 9장 - 단위 테스트](https://github.com/euichaan/TIL/tree/main/test)  
+- [Clean Code 9장 - 단위 테스트](https://github.com/euichaan/TIL/tree/main/test)  
 
