@@ -16,5 +16,6 @@
   
 ## Test
 - [Clean Code 9장 - 단위 테스트](https://github.com/euichaan/TIL/blob/main/test/cleancode/unit-test.md)  
-- [given-when-then](https://github.com/euichaan/TIL/blob/main/test/givenwhenthen/given-when-then.md)
+- [given-when-then](https://github.com/euichaan/TIL/blob/main/test/givenwhenthen/given-when-then.md)  
+- [JUnit method](https://github.com/euichaan/TIL/blob/main/test/junit/junit.md)  
 
