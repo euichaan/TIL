@@ -15,5 +15,6 @@
 1월 3주차부터 분류로 변경  
   
 ## Test
-- [Clean Code 9장 - 단위 테스트](https://github.com/euichaan/TIL/tree/main/test)  
+- [Clean Code 9장 - 단위 테스트](https://github.com/euichaan/TIL/blob/main/test/cleancode/unit-test.md)  
+- [given-when-then](https://github.com/euichaan/TIL/blob/main/test/givenwhenthen/given-when-then.md)
 
