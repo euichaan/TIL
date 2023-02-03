@@ -31,7 +31,6 @@ String pool이 있기 때문에 두 개의 다른 변수가 풀에서 동일한 
 3. Hashcode Caching(해시코드 캐싱)  
 4. Performance(성능)  
 
-## String Immutable
 ```java
 String name = "Shane";
 name = "ShanePark";
@@ -45,7 +44,7 @@ reference(참조) 일 뿐이다.
 정리하자면 Java에서 말하는 String의 Immutable은 name 변수에 대해 말하는 것이 아닌 메모리의 "Shane" 혹은  
 "ShanePark"이라는 String Object에 대한 것. 해당 String Object의 값은 한번 생성된 후에는 값이 절대 변하지 않는다.  
   
-## String Immutable한 이유
+Immutable의 이점
 1. 메모리 절약  
 2. Security  
 3. thread safe  
