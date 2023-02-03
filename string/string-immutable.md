@@ -1,3 +1,36 @@
+# String Immutable
+James Gosling(creator of Java)의 말 :  
+He further supports his argument stating features that immutability provides, such as caching, security,   easy reuse without replication, etc.  
+immutablity가 캐싱, 보안, 복제없는 쉬운 재사용을 제공한다고 말하고 있다.  
+  
+immutable Object는 완전히 생성된 후에도 내부 상태가 일정하게 유지되는 객체이다.  
+즉, object가 variable에 할당되면, 어떤 방법으로도 참조를 업데이트하거나 내부 상태를 변경할 수 없다.  
+  
+그렇다면 String은 왜 Java에서 Immutable일까?  
+Immutable(불변)으로 유지하는 것의 이점은 캐싱, 보안, 동기화, 성능이다.  
+  
+## String Pool의 소개
+String은 가장 널리 쓰이는 자료구조. String literal을 캐싱하고 재사용한다면 다른 문자열 변수가 String Pool  
+에서 동일한 개체를 참조하기 때문에 많은 힙 공간이 절약된다.  
+
+Java String Pool은 JVM에서 문자열을 저장하는 특수 메모리 영역이다.  
+Strings는(문자열은) Java에서 Immutable이기 때문에 JVM은 각 리터럴 문자열의 복사본 하나만 풀에 저장하여  
+문자열에 할당된 메모리 양을 최적화한다. 이 프로세스를 인턴이라고 한다.  
+  
+```java
+String s1 = "Hello World";
+String s2 = "Hello World";
+         
+assertThat(s1 == s2).isTrue(); // true
+```
+String pool이 있기 때문에 두 개의 다른 변수가 풀에서 동일한 개체를 가리키고 있다.중요한 메모리 리소스 절약!  
+
+## why Immutable?
+1. Security(보안)  
+2. Synchronization(동기화)  
+3. Hashcode Caching(해시코드 캐싱)  
+4. Performance(성능)  
+
 ## String Immutable
 ```java
 String name = "Shane";
