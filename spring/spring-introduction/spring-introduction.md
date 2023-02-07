@@ -84,6 +84,24 @@ hello 객체를 JSON 포맷으로 바꿔서 웹 브라우저에 응답.
   
 서비스는 비즈니스에 의존적으로 설계.  
 빌드 될 때 테스트 코드는 실제 코드에 포함되지 않는다.  
+  
+기존에는 회원 서비스가 MemoryMemberRepository를 직접 생성하게 했다.  
+```java
+public class MemberService {
+  private final MemberRepository memberRepository = new MemoryMemberRepository();
+}
+```
+바뀐 구조는 회원 리포지토리의 코드가 회원 서비스 코드를 DI 가능하게 변경한다.  
+MemberService입장에서 new를 하는게 아니라 외부에서 주입받는다.  
+```java
+public class MemberService {
+  private final MemberRepository memberRepository;
+
+  public MemberService(MemberRepository memberRepository) {
+    this.memberRepository = memberRepository;
+  }
+}
+```
 
 
 
