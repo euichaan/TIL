@@ -101,7 +101,112 @@ public class MemberService {
     this.memberRepository = memberRepository;
   }
 }
-```
+```  
+MemberController가 MemberService를 의존.  
+@Controller : 스프링 컨테이너가 컨트롤러 애노테이션이 붙은 클래스의 객체를 생성해서 넣어둠. 스프링이 관리  
+스프링 컨테이너로부터 받아서 쓰도록 바꿈. new로 memberSerivce를 만들 필요 없이 하나만 생성해서 공유.  
+  
+스프링 컨테이너에 하나만 등록 @Autowired  
+생성자에 @Autowired가 있으면 스프링이 연관된 객체를 스프링 컨테이너에서 찾아서 넣어준다.  
+이렇게 객체 의존관계를 외부에서 넣어주는 것을 DI(Dependency Injection, 의존성 주입)이라 한다.    
+  
+스프링 컨테이너에서 관리하는 memberService를 넣어줘야 하는데 memberService가 스프링 빈으로 등록되어 있지 않다.  
+  
+MemberController가 생성될 때 스프링 빈에 등록되어있는 MemberService 객체를 가져다가 넣어준다. DI  
+  
+스프링 빈을 등록하는 2가지 방법  
+- 컴포넌트 스캔과 자동 의존관계 설정  
+- 자바 코드로 직접 스프링 빈 등록  
+@Component 애노테이션이 있으면 스프링 빈으로 자동 등록된다.  
+@Component 를 포함하는 다음 애노테이션도 스프링 빈으로 자동 등록된다. (@Controller, @Service, @Repository)  
+  
+@ComponentScan의 대상은 HelloSpringApplication를 포함한 하위 패키지만 해당된다.  
+  
+@Configuration을 사용해서 자바 코드를 직접 스프링 빈으로 등록할 수 있다.  
+DI에는 필드 주입, setter 주입, 생성자 주입이 있다. 생성자 주입을 권장한다.  
+생성자 주입을 사용하면 애플리케이션 조립될 때 주입되고 끝난다.  
+  
+실무에서 주로 정형화된 컨트롤러, 서비스, 리포지토리 같은 코드는 컴포넌트 스캔을 사용한다.  
+그리고 정형화 되지 않거나, 상황에 따라 구현 클래스를 변경해야 하면 설정을 통해 스프링 빈으로 등록한다.  
+  
+`@Autowired` 를 통한 DI는 `helloController`, `memberService` 등과 같이 스프링이 관리하는 객체에서만 동작.  
+스프링 빈으로 등록하지 않고 내가 직접 생성한 객체에서는 동작하지 않는다.  
+  
+컨트롤러가 정적 파일보다 우선순위가 높다.  
+  
+html의 name : 서버로 보내는 키  
+스프링이 setter 메서드로 name을 넣어준다.  
+  
+DataSource는 데이터베이스 커넥션을 획득할 때 사용하는 객체이다.  
+스프링부트는 데이터베이스 커넥션 정보를 바탕으로 DataSource를 생성하고 스프링 빈으로 만들어둔다.  
+그래서 DI를 받을 수 있다.  
+  
+다형성을 활용 - 인터페이스를 두고, 구현체 바꿔끼기.  
+DI 덕분에 편리하게 활용.  
+  
+개방-폐쇄 원칙(OCP, Open-Closed Principle)  
+확장에는 열려있고, 수정, 변경에는 닫혀있다.  
+스프링의 DI를 사용하면 기존 코드를 전혀 손대지 않고, 설정만으로 구현 클래스를 변경할 수 있다.  
+  
+테스트할 때는 필드 주입 가능.  
+`@SpringBootTest` : 스프링 컨테이너와 테스트를 함께 실행한다.  
+`@Transactional` : 테스트 케이스에 이 애노테이션이 있으면, 테스트 시작 전에 트랜잭션을 시작하고,  
+테스트 완료 후에 항상 롤백한다. 이렇게 하면 DB에 데이터가 남지 않으므로 다음 테스트에 영향을 주지 않는다.  
+  
+## JPA
+기존의 반복 코드는 물론이고, 기본적인 SQL도 JPA가 직접 만들어서 실행해준다.  
+JPA를 사용하면, SQL과 데이터 중심의 설계에서 `객체 중심의 설계`로 패러다임을 전환을 할 수 있다.  
+JPA를 사용하면 개발 생산성을 크게 높일 수 있다.  
+  
+spring.jpa.show-sql=true // JPA가 날리는 sql을 볼 수 있음  
+spring.jpa.hibernate.ddl-auto=none // 자동 테이블 생성 기능은 끔  
+  
+Object relational mapping(ORM) : 객체와 RDB의 테이블을 매핑 -> 애노테이션으로  
+JPQL : 객체를 대상으로 쿼리를 날림. SQL로 번역  
+PK 기반이 아닌 나머지는 JPQL을 작성해야 함.  
+  
+## 스프링 데이터 JPA
+스프링 데이터 JPA는 JPA를 편리하게 사용하도록 도와주는 기술. 따라서 JPA를 먼저 학습한 후에 사용해야 한다.  
+스프링 데이터 JPA가 SpringDataJpaMemberRepository를 스프링 빈으로 자동 등록해준다.  
+  
+스프링 컨테이너에서 memberRepository를 찾는데, SpringDataJpaRepository를 보고 넣어준다.  
+- 인터페이스를 통한 기본적인 CRUD  
+- `findByName()`, `findByEmail()` 처럼 메서드 이름 만으로 조회 기능 제공  
+- 페이징 기능 자동 제공  
+복잡한 동적 쿼리는 Querydsl이라는 라이브러리를 사용하면 된다.  
+  
+## AOP  
+모든 메서드의 호출 시간을 측정하고 싶다면?  
+  
+회원가입, 회원 조회에 시간을 측정하는 기능은 핵심 관심 사항이 아니다.  
+시간을 측정하는 로직은 공통 관심 사항이다.  
+시간을 측정하는 로직과 핵심 비즈니스 로직이 섞여서 유지보수가 어렵다.  
+시간을 측정하는 로직을 별도의 공통 로직으로 만들기 매우 어렵다.  
+시간을 측정하는 로직을 변경할 때 모든 로직을 찾아가면서 변경해야 한다. 
+
+AOP : Aspect Oriented Programming  
+공통 관심 사항(cross-cutting concern) vs 핵심 관심 사항(core concern) 분리  
+원하는 곳에 공통 관심 사항을 적용  
+  
+회원가입, 회원 조회 등 핵심 관심사항과 시간을 측정하는 공통 관심 사항을 분리한다.  
+시간을 측정하는 로직을 별도의 공통 로직으로 만들었다.  
+  
+AOP 적용 후에는 가짜 스프링 빈을 앞에 세워둠. joinPoint.proceed()를 호출하면 실제 memberService 호출.  
+
+
+
+
+  
+
+
+  
+
+
+  
+
+
+
+
 
 
 
