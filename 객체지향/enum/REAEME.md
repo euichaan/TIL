@@ -31,3 +31,26 @@ Enum의 생성자는 Sole Constructor이다.
 컴파일러에서 사용하고 사용자가 직접 호출할 수는 없다.  
 따라서 enum -> getConstructor -> newInstance로 사용하는 객체 생성 흐름이 적용되지 않는다.  
 (Reflection은 new와 동일하게 클래스 내 생성자로 인스턴스를 사용하기 때문이다.)  
+  
+# EnumMap
+- Enum 타입만 key로 사용 가능한 특별한 Map  
+- Array를 이용하기 때문에 성능적으로 우수  
+- 해싱 과정이 필요 없어 HashMap보다 빠름  
+- null을 key로 넣는 경우 NullPointerException 발생  
+- thread-safe하지 않음  
+  
+## EnumMap 사용 이유 1. 성능이 우수하다
+EnumMap은 배열 형태로 이루어져있기 때문에 다른 Map에 비해 성능이 우수하다.  
+  
+HashMap의 경우 get / put/ remove complexity가 HashMap의 경우에는 O(1)이다.  
+하지만 HashMap은 hashCode()를 사용해 키와 값을 저장하므로 해시 충돌 가능성이 존재한다.  
+EnumMap은 해시를 사용할 필요가 없으므로 충돌 가능성이 없다.  
+  
+## 2. key를 제한할 수 있다.
+Enum 타입 외에는 key로 만들 수 없다.  
+HashMap에 null을 넣을 수 있는 대신, EnumMap에는 Null을 넣으면 NullPointerException이 발생한다.  
+
+
+
+
+
