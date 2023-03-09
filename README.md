@@ -37,6 +37,10 @@
 - [SQL 첫걸음](https://github.com/euichaan/TIL/tree/main/databaselearn/sql-first)  
   
 ## 객체지향
-- [일급 컬렉션](https://github.com/euichaan/TIL/tree/main/%EA%B0%9D%EC%B2%B4%EC%A7%80%ED%96%A5/first-class-collection)
+- [일급 컬렉션](https://github.com/euichaan/TIL/tree/main/%EA%B0%9D%EC%B2%B4%EC%A7%80%ED%96%A5/first-class-collection)  
+  
+## JCF 와 자료구조
+- [자바로 배우는 핵심 자료구조와 알고리즘](https://github.com/euichaan/TIL/tree/main/jcf/%EC%9E%90%EB%B0%94%EB%A1%9C%20%EB%B0%B0%EC%9A%B0%EB%8A%94%20%ED%95%B5%EC%8B%AC%20%EC%9E%90%EB%A3%8C%EA%B5%AC%EC%A1%B0%EC%99%80%20%EC%95%8C%EA%B3%A0%EB%A6%AC%EC%A6%98)  
+
 
 
