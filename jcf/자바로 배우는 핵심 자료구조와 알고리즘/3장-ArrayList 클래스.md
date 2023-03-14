@@ -100,9 +100,116 @@ collection의 크기가 상수라면 removeAll 메서드는 n에 대해 선형�
 반복 횟수가 항상 n에 비례하지 않는다면 좀 더 고민해봐야 합니다.  
     
 ## 3.4 연결 자료구조
+자료구조가 연결되었다 함은 노드라는 객체들이 다른 노드에 대한 참조를 포함한 형태로 저장된 것을 의미합니다.  
+연결 리스트에서 각 노드는 리스트의 다음 노드에 대한 참조를 포함합니다.  
+연결 구조의 다른 예로는 트리와 그래프가 있습니다.  
+이때 노드는 둘 이상의 다른 노드에 대한 참조를 포함합니다.  
+  
+```java
+package listinterface;
 
+public class ListNode {
 
+	public Object data;
+	public ListNode next;
 
+	public ListNode() {
+		this.data = null;
+		this.next = null;
+	}
 
+	public ListNode(Object data) {
+		this.data = data;
+		this.next = null;
+	}
 
+	public ListNode(Object data, ListNode next) {
+		this.data = data;
+		this.next = next;
+	}
 
+	@Override
+	public String toString() {
+		return "ListNode(" + data.toString() +")";
+	}
+}
+```
+ListNode 객체에는 두 개의 인스턴스 변수가 있습니다. data 변수는 어떤 Object에 대한 참조고,  
+next 변수는 리스트에서 다음 노드에 대한 참조입니다. 리스트의 마지막 노드에서 관례상 next 변수는 null입니다.  
+```java
+package listinterface;
+
+public class LinkedListExample {
+
+	public static void main(String[] args) {
+		ListNode node1 = new ListNode(1);
+		ListNode node2 = new ListNode(2);
+		ListNode node3 = new ListNode(3);
+		
+		node1.next = node2;
+		node2.next = node3;
+		node3.next = null;
+		
+		ListNode node0 = new ListNode(0, node1);
+	}
+}
+
+```
+일련의 작업을 수행하고 나면 데이터로 정수 0, 1, 2, 3이 들어 있는 노드들이 오름차순으로 연결되었음을 알 수 있습니다.  
+마지막 노드에서 next 필드는 null입니다.  
+  
+## 3.5 실습3
+myLinkedList 클래스의 인스턴스 변수와 생성자는 다음과 같습니다.  
+```java
+public class MyLinkedList<E> implements List<E> {
+
+  private int size; // 요소의 개수를 추적합니다
+  private Node head; // 첫 번째 노드에 대한 참조입니다
+
+  public MyLinkedList() {
+    head = null;
+    size = 0;
+  }
+}
+```
+size 변수는 myLinkedList에 있는 요소 개수를 추적하고, head 변수는 리스트의 첫 번째 노드를 참조하거나  
+리스트가 비었으면 null입니다.  
+  
+요소 개수를 꼭 저장할 필요는 없습니다. 그리고 일반적으로 중복 정보를 유지하는 것은 위험한데,  
+정보를 올바르게 갱신하지 않으면 오류가 생길 수 있기 때문입니다. 또한, 약간의 추가 공간을 차지하게 됩니다.  
+  
+하지만 size 변수를 명시적으로 지정하면 상수 시간으로 size 메서드를 구현할 수 있습니다.  
+그렇지 않으면 리스트를 순회하여 요소 개수를 세는 선형 시간이 필요합니다.  
+  
+MyLinkedList에 중첩된 Node 클래스의 정의를 살펴보겠습니다.  
+```java
+private class Node {
+  public E data;
+  public Node next;
+
+  public Node(E data, Node next) {
+    this.data = data;
+    this.next = next;
+  }
+}
+```
+필자가 구현한 add 메서드를 살펴보겠습니다.  
+```java
+public boolean add(E element) {
+  if (head == null) {
+    head = new Node(element);
+  } else {
+    Node node = head;
+    // 마지막 노드까지 반복합니다.
+    for ( ; node.next != null; node = node.next) {}
+      node.next = new Node(element);
+  }
+  size++;
+  return true;
+}
+```
+이 예제는 문제를 푸는 데 필요한 두 가지 패턴을 보여줍니다.  
+1. 많은 메서드에서 리스트의 첫 번째 요소를 특별한 경우로 처리해야 합니다. 이 예제에서는 리스트에 첫 번째 요소를  
+추가하면 head 변수를 변경해야 합니다. 그렇지 않으면 리스트를 순회하여 끝을 찾아 새로운 노드를 추가해야 합니다.  
+2. add 메서드는 for 문으로 리스트에 있는 노드를 순회하는 방법을 보여줍니다. 반복문에 앞서 node를 선언해야 반복이 끝난 후  
+접근할 수 있음에 주의하세요.  
