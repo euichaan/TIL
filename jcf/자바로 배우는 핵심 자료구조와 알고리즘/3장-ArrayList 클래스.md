@@ -213,3 +213,83 @@ public boolean add(E element) {
 추가하면 head 변수를 변경해야 합니다. 그렇지 않으면 리스트를 순회하여 끝을 찾아 새로운 노드를 추가해야 합니다.  
 2. add 메서드는 for 문으로 리스트에 있는 노드를 순회하는 방법을 보여줍니다. 반복문에 앞서 node를 선언해야 반복이 끝난 후  
 접근할 수 있음에 주의하세요.  
+  
+indexOf 메서드는 다음과 같습니다.
+```java
+@Override
+	public int indexOf(Object target) {
+		//TODO: FILL THIS IN!
+		Node node = head;
+		for (int i = 0; i < size; i++) {
+			if (target.equals(node.data)) {
+				return i;
+			}
+			node = node.next;
+		}
+		return -1;
+	}
+```
+indexOf 메서드는 목록에서 지정된 요소가 처음 나타나는 인덱스를 반환하거나 이 목록에 요소가 포함되어 있지 않으면 -1을 리턴합니다.  
+(o==null ? get(i)==null : o.equals(get(i))), or -1 if there is no such index.  
+  
+null을 정상적으로 처리하는 equals 메서드  
+```java
+private boolean equals(Object target, Object element) {
+		if (target == null) {
+			return element == null;
+		} else {
+			return target.equals(element);
+		}
+	}
+```
+target과 element가 둘 다 null이어도 정상적으로 index를 반환합니다.  
+remove 메서드는 다음과 같습니다.  
+```java
+@Override
+	public E remove(int index) {
+		//TODO: FILL THIS IN!
+		E element = get(index);
+		if (index == 0) {
+			head = head.next;
+		} else {
+			Node node = getNode(index - 1);
+			node.next = node.next.next;
+		}
+		size--;
+		return element;
+	}
+```
+인덱스와 이 인덱스에 넣을 새로운 값을 저장하는 두 인자 버전의 add 메서드는 다음과 같습니다.  
+```java
+@Override
+	public void add(int index, E element) { // Using new Node(element, next) constructor
+		//TODO: FILL THIS IN!
+		if (index == 0) {
+			head = new Node(element, head);
+		} else {
+			Node node = getNode(index - 1);
+			node.next = new Node(element, node.next);
+		}
+		size++;
+	}
+```
+  
+## 3.6 가비지 컬렉션
+myArrayList 클래스는 필요하면 배열이 늘어나지만 결코 줄어들지는 않습니다.  
+배열은 가비지 컬렉션을 하지 않고 그 요소도 리스트 자체가 파괴될 때까지 가비지 컬렉션 대상이 아닙니다.  
+  
+연결 리스트 구현의 한 가지 장점은 요소를 제거하면 리스트 크기가 줄어들고 사용하지 않는 노드는 즉시 가비지 컬렉션이 될 수 있다는 것입니다.  
+  
+clear 메서드의 구현 코드는 다음과 같습니다.  
+```java
+public void clear() {
+  head = null;
+  size = 0;
+}
+```
+head 변수를 null로 만들면 첫 번째 Node에 대한 참조를 제거합니다.  
+해당 Node에 대한 다른 참조가 없다면(당연히 없어야 합니다) 가비지 컬렉션을 합니다.  
+이때 두 번째 Node에 대한 참조가 제거되고 이 것도 가비지 컬렉션을 합니다. 이 절차는 모든 노드를 가비지 컬렉션할 때까지 계속됩니다.  
+  
+clear 메서드는 요소의 개수에 비례하여 가비지 컬렉터가 동작하므로 선형으로 간주해야 합니다.  
+때떄로 성능 버그라고 불리는 예입니다.  
