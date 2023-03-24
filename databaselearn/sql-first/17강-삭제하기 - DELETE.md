@@ -9,4 +9,4 @@ WHERE 구를 생략할 경우에는 모든 행을 대상으로 동작하기 때�
 ## 2. DELETE 명령 구
 `DELETE FROM sample41 WHERE no = 1 OR no = 2;`  
 ORDER BY 구는 사용할 수 없습니다. 어떤 행부터 삭제할 것인지는 중요하지 않으며 의미가 없기 때문입니다.  
-* MySQL에서는 DELETE 명령에서 ORDER BY 구와 LIMIT 구를 사용ㅎ 삭제할 행을 지정할 수 있습니다.  
+* MySQL에서는 DELETE 명령에서 ORDER BY 구와 LIMIT 구를 사용해 삭제할 행을 지정할 수 있습니다.  
