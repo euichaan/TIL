@@ -73,8 +73,6 @@ Host: www.google.com
 -   서버에 전달하고 싶은 데이터는 query(쿼리 파라미터, 쿼리 스트링)을 통해서 전달
 -   메시지 바디를 사용해서 데이터를 전달할 수 있지만, 지원하지 않는 곳이 많아서 권장하지 않음
 
-[##_Image|kage@UfgJj/btrCfl0l8q2/s0TRNEj5AurMFT25hIWdO1/img.png|CDM|1.3|{"originWidth":1440,"originHeight":810,"style":"alignCenter","width":791,"height":445}_##][##_Image|kage@AvpSG/btrCaltwqr2/MkpxAJopSPGYRSpHbsOzAK/img.png|CDM|1.3|{"originWidth":1440,"originHeight":810,"style":"alignCenter","width":792,"height":446}_##][##_Image|kage@cknPdn/btrB8XUcIOB/j0gAtgYv73VaB0V0jHfGRk/img.png|CDM|1.3|{"originWidth":1440,"originHeight":810,"style":"alignCenter","width":791,"height":445}_##]
-
 ---
 
 ### **POST**
@@ -94,8 +92,6 @@ POST /members HTTP/1.1
 -   서버는 요청 데이터를 **처리**
 -   메시지 바디를 통해 들어온 데이터를 처리하는 모든 기능을 수행한다.
 -   주로 **전달된 데이터로 신규 리소스 등록, 프로세스 처리에 사용**
-
-[##_Image|kage@ZAxKS/btrCbndA8bV/GKDMMkX2KjOFOJG0klPJl1/img.png|CDM|1.3|{"originWidth":1440,"originHeight":810,"style":"alignCenter","width":791,"height":445}_##][##_Image|kage@bkstLy/btrB7NYAU1C/vKe4yCrKK4ZRkwaUTnegR0/img.png|CDM|1.3|{"originWidth":1440,"originHeight":810,"style":"alignCenter","width":791,"height":445}_##][##_Image|kage@CCPhz/btrB6QavMnV/xg9q3zKKznJ6VCKo3gXOQk/img.png|CDM|1.3|{"originWidth":1440,"originHeight":810,"style":"alignCenter","width":791,"height":445}_##]
 
 **요청 데이터를 어떻게 처리한다는 뜻일까? 예시**
 
@@ -148,9 +144,6 @@ Content-Type: application/json
     -   **클라이언트가 리소스 위치를 알고 URI를 지정**
     -   POST와의 차이점
 
-[##_Image|kage@cmej4R/btrCbnEFqrz/AAbiByYmF6zO2Wyx0h2fzk/img.png|CDM|1.3|{"originWidth":1440,"originHeight":810,"style":"alignCenter","width":791,"height":445}_##][##_Image|kage@M0uDd/btrB5y8f0qp/hENbj2akgQfYCqcg0SApRk/img.png|CDM|1.3|{"originWidth":1440,"originHeight":810,"style":"alignCenter","width":791,"height":445}_##][##_Image|kage@be81fG/btrB7bYCfAd/53ZcqkGWtH86TN8i0dISSK/img.png|CDM|1.3|{"originWidth":1440,"originHeight":810,"style":"alignCenter","width":791,"height":445}_##]
-
-[##_Image|kage@HO1NJ/btrB9vb8tnX/NeyWHzmB2Y3YdWVK2Dt78k/img.png|CDM|1.3|{"originWidth":1440,"originHeight":810,"style":"alignCenter","width":791,"height":445}_##][##_Image|kage@brNeXY/btrCfncQ9Oe/xYLLVEf85yUerO7leOfKRK/img.png|CDM|1.3|{"originWidth":1440,"originHeight":810,"style":"alignCenter","width":791,"height":445}_##][##_Image|kage@cL2Pst/btrCfnjCMGJ/NhboakcZ04Juu6efFktlbK/img.png|CDM|1.3|{"originWidth":1440,"originHeight":810,"style":"alignCenter","width":791,"height":445}_##]
 
 ---
 
@@ -167,7 +160,6 @@ Content-Type: application/json
 
 -   리소스 부분 변경
 
-[##_Image|kage@S1WZ9/btrB8YyP5nP/MR589OzQvmXfFqkP7gXufK/img.png|CDM|1.3|{"originWidth":1440,"originHeight":810,"style":"alignCenter","width":791,"height":445}_##][##_Image|kage@cFwbxk/btrB5VoBGD6/JtnUnkeZP96L0IuZP8eV10/img.png|CDM|1.3|{"originWidth":1440,"originHeight":810,"style":"alignCenter","width":791,"height":445}_##]
 
 ### **DELETE**
 
@@ -175,8 +167,6 @@ Content-Type: application/json
 DELETE /members/100 HTTP/1.1 
 Host: localhost:8080
 ```
-
-[##_Image|kage@cnsRnU/btrB6Jutop8/Un5trkyJD8OmXlm3hj7dK0/img.png|CDM|1.3|{"originWidth":1440,"originHeight":810,"style":"alignCenter","width":790,"height":445}_##][##_Image|kage@bNwxdv/btrCcDN3LaZ/gXVKhsJWvI1L8PHItkq231/img.png|CDM|1.3|{"originWidth":1440,"originHeight":810,"style":"alignCenter","width":791,"height":445}_##]
 
 ---
 ### **HTTP 메서드의 속성**
