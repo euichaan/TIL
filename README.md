@@ -1,19 +1,7 @@
 # Today I Learned(TIL)
 [![Tistory Badge](https://img.shields.io/badge/-tech%20blog-important)](https://chan9.tistory.com/) 
 
-오늘 배운 것을 ✏️기록하는 저장소입니다
-
-### [2022년 11월 3주차](https://github.com/euichaan/TIL/tree/main/2022-11-3%EC%A3%BC%EC%B0%A8)
-### [2022년 11월 4주차](https://github.com/euichaan/TIL/tree/main/2022-11-4%EC%A3%BC%EC%B0%A8)
-### [2022년 12월 1주차](https://github.com/euichaan/TIL/tree/main/2022-12-1%EC%A3%BC%EC%B0%A8)
-### [2022년 12월 2주차](https://github.com/euichaan/TIL/tree/main/2022-12-2%EC%A3%BC%EC%B0%A8)
-### [2022년 12월 3주차](https://github.com/euichaan/TIL/tree/main/2022-12-3%EC%A3%BC%EC%B0%A8)
-### [2022년 12월 4주차](https://github.com/euichaan/TIL/tree/main/2022-12-4%EC%A3%BC%EC%B0%A8)
-### [2023년 1월 1주차](https://github.com/euichaan/TIL/tree/main/2023-1-1%EC%A3%BC%EC%B0%A8)
-### [2023년 1월 2주차](https://github.com/euichaan/TIL/tree/main/2023-1-2%EC%A3%BC%EC%B0%A8)  
-  
-1월 3주차부터 분류로 변경  
-  
+오늘 배운 것을 ✏️기록하는 저장소입니다    
 ## Test
 - [Clean Code 9장 - 단위 테스트](https://github.com/euichaan/TIL/blob/main/test/cleancode/unit-test.md)  
 - [given-when-then](https://github.com/euichaan/TIL/blob/main/test/givenwhenthen/given-when-then.md)  
@@ -28,7 +16,10 @@
 ## Spring  
 - [Spring Introduction](https://github.com/euichaan/TIL/blob/main/spring/spring-introduction/spring-introduction.md)  
 - [Spring core principles-basic](https://github.com/euichaan/TIL/blob/main/spring/spring-core-principles-basic/spring-core-basic.md)  
-- [ArgumentResolver](https://github.com/euichaan/TIL/blob/main/spring/argumentResolver/argumentResolver.md)
+- [ArgumentResolver](https://github.com/euichaan/TIL/blob/main/spring/argumentResolver/argumentResolver.md)  
+    
+## REST
+- [rest-api](https://github.com/euichaan/TIL/blob/main/rest-api/rest-api.md)  
   
 ## Java8
 - [HashMap 성능 개선](https://github.com/euichaan/TIL/blob/main/java8/hashmap/hashmap-performance.md)  
