@@ -6,6 +6,7 @@ Mockito: Mock 객체를 쉽게 만들고 검증할 수 있는 방법을 제공�
 컨트롤하기 힘든 외부 서비스는 Mocking을 하는 것이 좋다고 생각.  
   
 - [단위 테스트에 대한 고찰](https://martinfowler.com/bliki/UnitTest.html)  
+- [Mockito 레퍼런스](https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html)  
   
 스프링 부트 2.2+ 프로젝트 생성시 spring-boot-starter-test에서 자동으로 Mockito 추가해 줌.  
   
@@ -14,6 +15,3 @@ Mockito: Mock 객체를 쉽게 만들고 검증할 수 있는 방법을 제공�
 - Mock이 어떻게 동작해야 하는지 관리하는 방법  
 - Mock의 행동을 검증하는 방법  
   
-- [Mockito 레퍼런스](https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html)  
-
-
