@@ -1,7 +1,9 @@
 # Today I Learned(TIL)
 [![Tistory Badge](https://img.shields.io/badge/-tech%20blog-important)](https://chan9.tistory.com/) 
 
-오늘 배운 것을 ✏️기록하는 저장소입니다    
+오늘 배운 것을 ✏️기록하는 저장소입니다  
+## Java
+- [jdk, jre, jvm](https://github.com/euichaan/TIL/blob/main/java/jvm/jvm-jdk-jre.md)  
 ## Test
 - [Clean Code 9장 - 단위 테스트](https://github.com/euichaan/TIL/blob/main/test/cleancode/unit-test.md)  
 - [given-when-then](https://github.com/euichaan/TIL/blob/main/test/givenwhenthen/given-when-then.md)  
