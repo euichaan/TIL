@@ -1,5 +1,5 @@
 # Understanding JIT(Just-in-time compiler)
-[원글](https://aboullaite.me/understanding-jit-compiler-just-in-time-compiler/)  
+[Understanding JIT(Just-in-time compiler](https://aboullaite.me/understanding-jit-compiler-just-in-time-compiler/)  
   
 JIT(Just-In-Time) 컴파일러는 런타임에 Java 응용 프로그램의 성능을 향상시키는 JRE(Java Runtime Environment)의 구성 요소입니다. JVM에서 컴파일러보다 성능에 더 영향을 미치는 것은 없으며 컴파일러 선택은 Java 개발자든 최종 사용자든 Java 애플리케이션을 실행할 때 가장 먼저 내리는 결정 중 하나입니다.  
   
