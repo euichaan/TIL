@@ -316,7 +316,7 @@ POST, PUT, PATCH 주로 사용
 
 byte 코드를 문자(String)으로 보려면 문자표(Charset)을 지정해주어야 한다.
 
-StreamUtils.copyToString(inputStream, `StandardCharsets.*UTF_8*);`
+StreamUtils.copyToString(inputStream, `StandardCharsets.UTF_8);`
 
 ### JSON 형식
 
@@ -356,9 +356,9 @@ HTTP API -Message Body JSON 응답
 
 - content-type: application/json
 
-JSON 결과 → 자바 객체 : `**objectMapper.readValue(messageBody, HelloData.class);**`
+JSON 결과 → 자바 객체 : `objectMapper.readValue(messageBody, HelloData.class);`
 
-자바 객체 → JSON 결과 : `**objectMapper.writeValueAsString(helloData);**`
+자바 객체 → JSON 결과 : `objectMapper.writeValueAsString(helloData);`
 
 ---
 
@@ -366,7 +366,7 @@ JSON 결과 → 자바 객체 : `**objectMapper.readValue(messageBody, HelloData
 
 → 매우 복잡하고 비효율적.
 
-HTML 문서에 `**동적으로 변경해야 하는 부분만 자바 코드를 넣을 수 있다면**` 더 편리.
+HTML 문서에 `동적으로 변경해야 하는 부분만 자바 코드를 넣을 수 있다면` 더 편리.
 
 이것이 바로 템플릿 엔진이 나온 이유이다. 템플릿 엔진을 사용하면 HTML 문서에서 필요한 곳만 코드를 적용해서 동적으로 변경할 수 있다.
 
@@ -402,7 +402,7 @@ JAVA 코드, 데이터 조회하는 리포지토리 등등 다양한 코드가 �
 
 ### 개요
 
-`**변경의 라이프 사이클**`
+`변경의 라이프 사이클`
 
 변경주기가 다르면 분리한다. → 포인트
 
@@ -412,7 +412,7 @@ JAVA 코드, 데이터 조회하는 리포지토리 등등 다양한 코드가 �
 
 JSP 같은 뷰 템플릿은 화면 렌더링 하는데 최적화 되어 있기 때문에 이 부분의 업무만 담당하는 것이 가장 효과적이다.
 
-`**Model View Controller**`
+`Model View Controller`
 
 MVC 패턴은 지금까지 학습한 것 처럼 하나의 서블릿이나, JSP로 처리하던 것을 컨트롤러(Controller)와 뷰(View)라는 영역으로 서로 역할을 나눈 것을 말한다.
 
@@ -512,13 +512,13 @@ return mv;
 
 참고: 더 자세한 경로가 우선순위가 높다. 그래서 기존에 등록한 서블릿도 함께 동작한다.
 
-`**요청 흐름**`
+`요청 흐름`
 
 - 서블릿이 호출되면 `HttpServlet`이 제공하는 `service()`가 호출된다.
 - `DispatcherServlet`의 부모인 `FrameworkServlet`에서 `service()`를 오버라이드 해두었다.
 - FramworkServlce.service() 시작으로 여러 메서드가 호출되면서 `DispatcherServlet.doDispatch()`가 호출된다.
     
-`**동작 순서**`
+`동작 순서`
 
 1. 핸들러 조회: 핸들러 매핑을 통해 요청 URL에 매핑된 핸들러(컨트롤러)를 조회한다.
 2. 핸들러 어댑터 조회: 핸들러를 실행할 수 있는 핸들러 어댑터를 조회한다.
@@ -580,21 +580,21 @@ HandlerAdapter
 1 = ...
 ```
 
-`**@Controller**`
+`@Controller`
 
 스프링이 자동으로 스프링 빈으로 등록한다. (내부에 @Component 애노테이션이 있어서 컴포넌트 스캔의 대상)
 
 스프링 MVC에서 애노테이션 기반 컨트롤러로 인식된다.
 
-`**@RequestMapping**`
+`@RequestMapping`
 
 요청 정보를 매핑한다
 
-`**ModelAndView**`
+`ModelAndView`
 
 모델과 뷰 정보를 담아서 반환하면 된다.
 
-`**RequestMappingHandlerMapping**`은 스프링 빈 중에서 `**@RequestMapping**` 또는 `**@Controller**`가 
+`RequestMappingHandlerMapping`은 스프링 빈 중에서 `@RequestMapping` 또는 `@Controller`가 
 
 클래스 레벨에 붙어 있는 경우에 매핑 정보로 인식한다.
 
