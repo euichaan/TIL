@@ -23,6 +23,7 @@
 - [Spring Introduction](https://github.com/euichaan/TIL/blob/main/spring/spring-introduction/spring-introduction.md)  
 - [Spring core principles-basic](https://github.com/euichaan/TIL/blob/main/spring/spring-core-principles-basic/spring-core-basic.md)  
 - [ArgumentResolver](https://github.com/euichaan/TIL/blob/main/spring/argumentResolver/argumentResolver.md)  
+- [Spring mvc 1](https://github.com/euichaan/TIL/blob/main/spring/spring-mvc-1/spring-mvc-1.md)  
     
 ## REST
 - [rest-api](https://github.com/euichaan/TIL/blob/main/rest-api/rest-api.md)  
