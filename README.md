@@ -22,7 +22,7 @@
 ## Spring  
 - [Spring Introduction](https://github.com/euichaan/TIL/blob/main/spring/spring-introduction/spring-introduction.md)  
 - [Spring core principles-basic](https://github.com/euichaan/TIL/blob/main/spring/spring-core-principles-basic/spring-core-basic.md)  
-- [spring mvc 패턴](https://github.com/euichaan/TIL/blob/main/img/spring%20mvc.jpg) 
+- [spring mvc 패턴 그림 정리](https://github.com/euichaan/TIL/blob/main/img/spring%20mvc.jpg) 
 - [ArgumentResolver](https://github.com/euichaan/TIL/blob/main/spring/argumentResolver/argumentResolver.md)  
 - [Spring mvc 1](https://github.com/euichaan/TIL/blob/main/spring/spring-mvc-1/spring-mvc-1.md)  
 - [DispatcherServlet과 HandlerMethod](https://github.com/euichaan/TIL/blob/main/spring/dispatcherservlet/dispatcherservlet-handlermethod.md)  
