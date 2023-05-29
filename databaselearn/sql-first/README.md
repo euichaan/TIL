@@ -34,5 +34,5 @@
 - [32강 테이블 결합](https://github.com/euichaan/TIL/blob/main/databaselearn/sql-first/31%EA%B0%95-%EC%A7%91%ED%95%A9%20%EC%97%B0%EC%82%B0.md)  
 - [33강 관계형 모델](https://github.com/euichaan/TIL/blob/main/databaselearn/sql-first/33%EA%B0%95-%EA%B4%80%EA%B3%84%ED%98%95%20%EB%AA%A8%EB%8D%B8.md)  
 - [34강 데이터베이스 설계](https://github.com/euichaan/TIL/blob/main/databaselearn/sql-first/34%EA%B0%95-%EB%8D%B0%EC%9D%B4%ED%84%B0%EB%B2%A0%EC%9D%B4%EC%8A%A4%20%EC%84%A4%EA%B3%84.md)  
-- [35강 정규화]()  
+- [35강 정규화](https://github.com/euichaan/TIL/blob/main/databaselearn/sql-first/35%EA%B0%95-%EC%A0%95%EA%B7%9C%ED%99%94.md)  
 - [36강 트랜잭션](https://github.com/euichaan/TIL/blob/main/databaselearn/sql-first/36%EA%B0%95-%ED%8A%B8%EB%9E%9C%EC%9E%AD%EC%85%98.md)  
