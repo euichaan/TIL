@@ -116,3 +116,73 @@ FROM 절의 모든 서브쿼리를 외부 쿼리로 병합할 수 있는 것은 
   
 MySQL 서버에서 FROM 절의 서브쿼리를 외부 쿼리로 병합하는 최적화는 optimizer_switch 시스템 변수로 제어할 수 있다.  
 ## WHERE 절에 사용된 서브쿼리
+WHERE 절의 서브쿼리는 SELECT 절이나 FROM 절보다는 다양한 형태로 사용될 수 있는데, 크게 다음 3가지로 구분해서 살펴보겠다.  
+이는 MySQL 옵티마이저가 최적화하는 형태를 기준으로 구분해본 것이다.  
+- 동등 또는 크다 작다 비교 = subquery  
+- IN 비교 = IN subquery  
+- NOT IN 비교 = NOT IN subquery  
+  
+### 동등 또는 크다 작다 비교
+MySQL 5.5 이전 버전까지는 서브쿼리 외부의 조건으로 쿼리를 실행하고, 최종적으로 서브쿼리를 체크 조건으로 사용했다.  
+하지만 이러한 처리 방식의 경우 풀 테이블 스캔이 필요한 경우가 많아서 성능 저하가 심각했다.  
+다음 예제 쿼리를 한번 살펴보자.  
+```SQL
+SELECT * FROM dept_emp de
+    WHERE de.emp_no = (SELECT e.emp_no
+                       FROM employees e
+                       WHERE e.first_name='Georgi' AND e.last_name='Facello' LIMIT 1)
+```
+MySQL5.5 이전 버전까지는 위 쿼리의 경우 dept_emp 테이블을 풀 스캔하면서 서브쿼리의 조건에 일치하는지 여부를 체크했다. 하지만 이는 많은 사용자가 기대하는 실행 순서는 아니었을 것이다.  
+  
+MySQL 5.5 버전부터는 이 쿼리의 실행 계획은 그 이전 버전과는 정반대로 실행되도록 개선됐다.  
+**서브쿼리를 먼저 실행한 후 상수로 변환한다.** 그리고 상숫값으로 서브쿼리를 대체해서 나머지 쿼리 부분을 처리한다.  
+그래서 위 쿼리의 경우 다음과 같은 실행 계획을 사용한다.    
+EXPLAIN 키워드를 붙여서 확인할 수 있다.  
+```
+| id | select_type | table | partitions | type | possible_keys     | key               | key_len | ref   | rows | filtered | Extra       |
++----+-------------+-------+------------+------+-------------------+-------------------+---------+-------+------+----------+-------------+
+|  1 | PRIMARY     | de    | NULL       | ref  | ix_empno_fromdate | ix_empno_fromdate | 4       | const |    1 |   100.00 | Using where |
+|  2 | SUBQUERY    | e     | NULL       | ref  | ix_firstname      | ix_firstname      | 58      | const |  253 |    10.00 | Using where
+```
+참고로, ref는 조인을 할 때 Primary Key 혹은 Unique Key가 아닌 Key로 매칭하는 경우를 말한다.  
+ALL은 테이블을 처음부터 끝까지 검색하는 경우로, 풀 테이블 스캔이라고 한다.  
+  
+위의 실행 계획에 의하면 dept_name 테이블을 풀 스캔하지 않고 (emp_no, from_date) 조합의 인덱스를 사용했다는 것을 알 수 있다.  
+이를 위해서는 서브쿼리 부분이 먼저 처리됐어야 한다는 것도 예측할 수 있다.  
+  
+조금 더 명확히 순서를 확인해보기 위해서는 EXPLAIN ANALYZE 명령어을 추가해서 쿼리의 실행 계획을 확인해보면 된다.  
+```
+-> Filter: (de.emp_no = (select #2))  (cost=1.10 rows=1) (actual time=0.016..0.018 rows=1 loops=1)
+    -> Index lookup on de using ix_empno_fromdate (emp_no=(select #2))  (cost=1.10 rows=1) (actual time=0.016..0.017 rows=1 loops=1)
+    -> Select #2 (subquery in condition; run only once)
+        -> Limit: 1 row(s)  (cost=65.78 rows=1) (actual time=0.271..0.271 rows=1 loops=1)
+            -> Filter: (e.last_name = 'Facello')  (cost=65.78 rows=25) (actual time=0.270..0.270 rows=1 loops=1)
+                -> Index lookup on e using ix_firstname (first_name='Georgi')  (cost=65.78 rows=253) (actual time=0.269..0.269 rows=1 loops=1)
+```
+제일 하단의 제일 안쪽 "Index  lookup on e using ix_firstname"라인을 확인할 수 있다. 즉, ix_firstname 인덱스로 서브쿼리를 처리한 후, 그 결과를 이용해 dept_emp 테이블의 ix_empno_fromdate 인덱스를 검색해 쿼리가 완료된다는 것을 의미한다.  
+  
+동등 비교 대신 크다 또는 작다 비교가 사용돼도 동일한 실행 계획을 사용한다.  
+  
+다음과 같이 단일 값 비교가 아닌 튜플 비교 방식이 사용되면 서브쿼리가 먼저 처리되어 상수화되긴 하지만 외부 쿼리는 인덱스를 사용하지 못하고 풀 테이블 스캔을 실행하는 것을 확인할 수 있다. MySQL 8.0 버전이라고 하더라도 아직 **튜플 형태의 비교는 주의해서 사용해야 한다.**   
+  
+```SQL
+EXPLAIN
+SELECT *
+FROM dept_emp de WHERE (emp_no, from_date) = (
+        SELECT emp_no, from_date
+        FROM salaries
+        WHERE emp_no = 100001 LIMIT 1);
+```
+  
+### IN 비교 (IN subquery)
+
+  
+
+
+
+  
+
+
+  
+
+
