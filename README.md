@@ -38,6 +38,7 @@
 - [SQL 첫걸음](https://github.com/euichaan/TIL/tree/main/databaselearn/sql-first)  
 - [SubQuery](https://github.com/euichaan/TIL/blob/main/databaselearn/subquery/subquery.md)  
 - [Server Status Variables](https://github.com/euichaan/TIL/blob/main/databaselearn/server-status-variables/status-variables.md)  
+- [MySQL 아키텍처](https://github.com/euichaan/TIL/blob/main/databaselearn/realmysql/4-architecture.md)  
   
 ## 객체지향
 - [일급 컬렉션](https://github.com/euichaan/TIL/tree/main/%EA%B0%9D%EC%B2%B4%EC%A7%80%ED%96%A5/first-class-collection)  
