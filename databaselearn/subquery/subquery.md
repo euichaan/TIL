@@ -175,14 +175,21 @@ FROM dept_emp de WHERE (emp_no, from_date) = (
 ```
   
 ### IN 비교 (IN subquery)
-
+실제 조인은 아니지만 다음 예제와 같이 테이블의 레코드가 다른 테이블의 레코드를 이용한 표현식(또는 칼럼 그 자체)과 일치하는지를 체크하는 형태를 세미 조인(Semi-Join)이라고 한다. 즉 WHERE 절에 사용된 IN (subquery) 형태의 조건을 조인의 한 방식인 세미 조인이라고 보는 것이다.  
+```SQL
+SELECT *
+FROM employees e
+WHERE e.emp_no IN
+    (SELECT de.emp_no FROM dept_emp de WHERE de.from_date='1995-01-01');
+```
+MySQL5.5 버전까지는 세미 조인의 최적화가 매우 부족해서 대부분 풀 테이블 스캔을 했다.  
+하지만 MySQL 5.6 버전부터 8.0버전까지 세미 조인의 최적화가 많이 개선되면서 이제 더 이상은 IN (subquery) 형태를 2개의 쿼리로 쪼개서 실행하거나 다른 우회 방법을 찾을 필요가 없어졌다.  
   
-
-
-
+### NOT IN 비교 (NOT IN subquery)
+IN (subquery) 와 비슷한 형태지만 이 경우를 안티 세미 조인(Anti Semi-Join)이라고 명명한다. 일반적인 RDBMS에서 Not-Equal 비교(<>)는 인덱스를 제대로 활용할 수 없듯이 안티 세미 조인 또한 최적화할 수 있는 방법이 많지 않다.  
+MySQL 옵티마이저는 안티 세미 조인 쿼리가 사용되면 다음 두 가지 방법으로 최적화를 수행한다.  
+- NOT EXISTS  
+- 구체화(Materialization)  
   
-
-
+두 가지 최적화 모두 성능 향상에 도움이 되지 않는 방법이므로 쿼리가 최대한 다른 조건을 활용해서 데이터 검색 범위를 좁힐 수 있게 하는 것이 좋다. WHERE 절에 단독으로 안티 세미 조인 조건만 있다면 **풀 테이블 스캔을 피할 수 없으니 주의하자.**  
   
-
-
