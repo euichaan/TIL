@@ -125,7 +125,9 @@ UNLOCK INSTANCE;
 - REPAIR TABLE과 OPTIMIZE TABLE 명령  
 - 사용자 관리 및 비밀번호 변경  
   
-하지만 백업 락은 일반적인 테이블의 데이터 변경은 허용된다. 일반적인 MySQL 서버의 구성은 소스 서버(Source server)와 레플리카 서버(Replica server)로 구성되는데, 주로 백업은 레플리카 서버에서 실행된다. 하지만 백업이 FLUSH TABLE WITH READ LOCK 명령을 이용해 글로벌 락을 획득하면 복제는 
+하지만 백업 락은 일반적인 테이블의 데이터 변경은 허용된다. 일반적인 MySQL 서버의 구성은 소스 서버(Source server)와 레플리카 서버(Replica server)로 구성되는데, 주로 백업은 레플리카 서버에서 실행된다. 하지만 백업이 FLUSH TABLE WITH READ LOCK 명령을 이용해 글로벌 락을 획득하면 복제는 백업 시간만큼 지연될 수밖에 없다. 레플리카 서버에서 백업을 실행하는 도중에 소스 서버에 문제가 생기면 레플리카 서버의 데이터가 최신 상태가 될 때까지 서비스를 멈춰야 할 수도 있다.  
+  
+XtraBackup이나 Enterprise Backup 툴이 실행되는 도중에 스키마 변경이 실행되면 백업은 실패하게 된다. 
   
 ## 2.2 테이블 락
 **테이블 락(Table Lock)은 개별 테이블 단위로 설정되는 잠금**이며, 명시적 또는 묵시적으로 특정 테이블의 락을 획득할 수 있다.  
