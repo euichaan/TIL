@@ -276,5 +276,21 @@ STATEMENT 기반 바이너리 로그 포맷: 실행된 SQL 문을 그대로 바�
 ROW 기반 바이너리 로그 포맷: 테이블에 대한 실제 행 수준의 변경 사항을 기록 
 ```
 ## 3.2 인덱스와 잠금
+InnoDB의 `잠금`과 `인덱스`는 상당히 중요한 연관 관계가 있기 때문에 다시 한번 더 자세히 살펴보자.  
+"레코드 락"을 소개하면서 잠깐 언급했듯이 **InnoDB의 잠금은 레코드를 잠그는 것이 아니라 인덱스를 잠그는 방식으로 처리된다.** 즉, **변경해야 할 레코드를 찾기 위해 검색한 인덱스의 레코드를 모두 락을 걸여야 한다.**    
+```SQL
+-- // employees 테이블에서 first_name='Georgi'이고 last_name='Klassen'인 사원은 딱 1명이 있다.
+SELECT COUNT(*) FROM employees WHERE first_name='Georgi';
 
+SELECT COUNT(*) FROM employees WHERE first_name='Georgi' AND last_name='Klassen';
+-- // employees 테이블에서 first_name='Georgi'이고 last_name='Klassen'인 사원의 입사 일자를 오늘로 변경하는 쿼리
+UPDATE employees SET hire_date=NOW() WHERE first_name='Georgi' AND last_name='Klassen';
+```
+UPDATE 문장이 실행되면 1건의 레코드가 업데이트될 것이다. 하지만 이 1건의 업데이트를 위해 몇 개 의 레코드에 락을 걸어야 할까?  
+이 UPDATE 문장에서 인덱스를 이용할 수 있는 조건은 first_name='Georgi'이며, last_name 칼럼은 인덱스에 없기 때문에 fisrt_name='Georgi'인 레코드 253건의 레코드가 모두 잠긴다.  
+  
+이 예제에서는 몇 건 안되는 레코드만 잠그지만 UPDATE 문장을 위해 적절히 인덱스가 준비돼 있지 않다면 각 클라이언트 간의 동시성이 상당히 떨어져서 한 세션에서 UPDATE 작업을 하는 중에는 다른 클라이언트는 그 테이블을 업데이트하지 못하고 기다려야 하는 상황이 발생할 것이다.  
+  
+이 테이블에 인덱스가 하나도 없다면 어떻게 될까? 이러한 경우에는 테이블을 풀 스캔하면서 UPDATE 작업을 하는데, 이 과정에서 테이블에 있는 30여만 건의 모든 레코드를 잠그게 된다.  
+이것이 MySQL의 방식이며, InnoDB에서 인덱스 설계가 중요한 이유 또한 이것이다.  
 ## 3.3 레코드 수준의 잠금 확인 및 해제
