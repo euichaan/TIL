@@ -330,5 +330,47 @@ InnoDB에서는 독특한 특성 때문에 REPEATABLE READ 격리 수준에서�
   
 ## 4.1 READ UNCOMMITTED
 READ UNCOMMITED 격리 수준에서는 그림과 같이 각 트랜잭션에서의 변경 내용이 COMMIT이나 ROLLBACK 여부에 상관없이 다른 트랜잭션에서 보인다.  
+![](https://github.com/euichaan/TIL/blob/main/img/READ%20UNCOMMITTED.png)  
+사용자 A가 Lara인 새로운 사원을 INSERT한다. 사용자 B가 변경된 내용을 커밋하기도 전에 사용자 B는 emp_no=500000인 사원을 검색하고 있다. 하지만 사용자 B는 사용자 A가 INSERT한 사원의 정보를 커밋되지 않은 상태에서도 조회할 수 있다. 그런데 문제는 사용자 A가 처리 도중 문제가 발생해 INSERT 된 내용을 롤백한다고 하더라도 여전히 사용자 B는 "Lara"가 정상적인 사원이라고 생각하고 계속 처리할 것이라는 점이다.  
+  
+이처럼 **어떤 트랜잭션에서 처리한 작업이 완료되지 않았는데도 다른 트랜잭션에서 볼 수 있는 현상을 더티 리드(Dirty Read)라 하고, 더티 리드가 허용되는 격리 수준이 READ UNCOMMITTED다.** 더티 리드 현상은 데이터가 나타났다 사라졌다 하는 현상을 초래하므로 애플리케이션 개발자와 사용자를 상당히 혼란스럽게 만들 것이다. 또한 더티 리드를 유발하는 READ UNCOMMITTED는 RDBMS 표준에서는 트랜잭션의 격리 수준으로 인정하지 않을 정도로 정합성에 문제가 많은 격리 수준이다. 최소한 READ COMMITTED 이상의 격리 수준을 사용할 것을 권장한다.  
+  
+## 4.2 READ COMMITTED
+READ COMMITTED는 오라클 DBMS에서 기본으로 사용되는 격리 수준이며, 온라인 서비스에서 가장 많이 선택되는 격리 수준이다. 이 레벨에서는 위에서 언급한 더티 리드(Dirty read)같은 현상은 발생하지 않는다. **어떤 트랜잭션에서 데이터를 변경했더라도 COMMIT이 완료된 데이터만 다른 트랜잭션에서 조회할 수 있기 때문이다.**  
+![](https://github.com/euichaan/TIL/blob/main/img/READ%20COMMITTED.png)  
+그림에서 사용자 A는 emp_no=500000인 사원의 first_name을 "Lara"에서 "Toto"로 변경했는데, 이때 새로운 값인 "Toto"는 employees 테이블에 즉시 기록되고 이전 값인 "Lara"는 언두 영역으로 백업된다.  
+사용자 A가 커밋을 수행하기 전에 사용자 B가 emp=500000인 사원을 SELECT하면 조회된 결과의 first_name 칼럼의 값은 "Toto"가 아니라 "Lara"로 조회된다. 여기서 사용자 B의 SELECT 쿼리 결과는 employees 테이블이 아니라 언두 영역에 백업된 레코드에서 가져온 것이다.  
+  
+**READ COMMITTED 격리 수준에서는 어떤 트랜잭션에서 변경한 내용이 커밋되기 전까지는 다른 트랜잭션에서 그러한 변경내역을 조회할 수 없기 때문이다.** 최종적으로 사용자 A가 변경된 내용을 커밋하면 그때부터는 다른 트랜잭션에서도 백업된 언두 레코드("Lara")가 아니라 새롭게 변경된 "Toto"라는 값을 참조할 수 있게 된다.  
+  
+READ COMMITTED 격리 수준에서도 "NON-REPEATABLE READ"(REPEATABLE READ 가 불가능하다)라는 부정합의 문제가 있다.  
+![](https://github.com/euichaan/TIL/blob/main/img/READ%20COMMITED%202.png)  
+그림에서 처음 사용자 B가 BEGIN 명령으로 트랜잭션을 시작하고 first_name이 "Toto"인 사용자를 검색했는데, 일치하는 결과가 없었다.  
+하지만 사용자 A가 사원 번호가 500000인 사원의 이름을 "Toto"로 변경하고 커밋을 실행한 후, 사용자 B가 똑같은 SELECT 쿼리로 다시 조회하면 이번에는 결과가 1건이 조회된다.  
+이는 별다른 문제가 없어 보이지만, **사실 사용자 B가 하나의 트랜잭션 내에서 똑같은 SELECT 쿼리를 실행했을 때는 항상 같은 결과를 가져와야 한다는 "REPEATABLE READ" 정합성에 어긋나는 것이다.**  
 
-
+이러한 부정합 현상은 일반적인 웹 프로그램에서는 크게 문제되지 않을 수 있지만 하나의 트랜잭션에서 동일 데이터를 여러 번 읽고 변경하는 작업이 금전적인 처리와 연결되면 문제가 될 수도 있다.  
+예를 들어, 다른 트랜잭션에서 입금과 출금 처리가 계속 진행될 때 다른 트랜잭션에서 오늘 입금된 금액의 총합을 조회한다고 가정해보자. 그런데 "REPEATABLE READ" 가 보장되지 않기 때문에 총합을 계산하는 SELECT 쿼리는 실행될 때마다 다른 결과를 가져올 것이다. 중요한 것은 사용 중인 트랜잭션의 격리 수준에 의해 실행하는 SQL 문장이 어떤 결과를 가져오게 되는지를 정확히 예측할 수 있어야 한다는 것이다.  
+  
+가끔 사용자 중에서 '트랜잭션 내에서 실행되는 SELECT 문장과' 트랜잭션 없이 실행되는 SELECT 문장'의 차이를 혼동하는 경우가 있다. READ COMMITTED 격리 수준에서는 트랜잭션 내에서 실행되는 SELECT 문장과 트랜잭션 외부에서 실행되는 SELECT 문장의 차이가 별로 없다. 하지만 REPEATABLE READ 격리 수준에서는 기본적으로 SELECT 쿼리 문장도 트랜잭션 범위 내에서만 작동한다. 즉, START TRANSACTION(또는 BEGIN) 명령으로 트랜잭션을 시작한 상태에서 온종일 동일한 쿼리를 반복해서 실행해도 동일한 결과만 보게 된다(아무리 다른 트랜잭션에서 그 데이터를 변경하고 COMMIT을 실행한다고 하더라도 말이다).  
+## 4.3 REPEATABLE READ
+REPEATABLE READ는 MySQL의 InnoDB 스토리지 엔진에서 기본으로 사용되는 격리 수준이다. 바이너리 로그를 가진 MySQL 서버에서는 최소 REPETABLE READ 격리 수준 이상을 사용해야 한다.  
+이 격리 수준에서는 READ COMMITTED 격리 수준에서 발생하는 "NON-REPEATABLE READ"부정합이 발생하지 않는다. InnoDB 스토리지 엔진은 트랜잭션이 ROLLBACK될 가능성에 대비해 변경되기 전 레코드를 언두(Undo) 공간에 백업해두고 실제 레코드 값을 변경한다(MVCC). **REPEATABLE READ는 이 MVCC를 이용해 언두 영역에 백업된 이전 데이터를 이용해 동일 트랜잭션 내에서는 동일한 결과를 보여줄 수 있게 보장한다.** 사실 READ COMMITTED도 MVCC를 이용해 COMMIT되기 전의 데이터를 보여준다. REPEATABLE READ와 READ UNCOMMITTED의 차이는 언두 영역에 백업된 레코드의 여러 버전 가운데 몇 번째 이전 버전까지 찾아 들어가야 하느냐에 있다.  
+  
+![](https://github.com/euichaan/TIL/blob/main/img/REPEATABLE%20READ%201.png)
+그림은 REPEATABLE READ 격리 수준이 작동하는 방식을 보여준다. 우선 이 시나리오가 실행되기 전에 employees 테이블은 번호가 6인 트랜잭션에 의해 INSERT 됐다고 가정하자.  
+사용자 A의 트랜잭션 번호는 12였으며 사용자 B의 트랜잭션 번호는 10이었다. 이때 사용자 A는 사원의 이름을 "Toto"로 변경하고 커밋을 수행했다. 그런데 A 트랜잭션이 변경을 수행하고 커밋을 했지만, 사용자 B가 emp_no=500000인 사원을 A 트랜잭션의 변경 전후 각각 한 번씩 SELECT 했는데 결과는 항상 "Lara" 라는 값을 가져온다.  
+  
+사용자 B가 BEGIN 명령으로 트랜잭션을 시작하면서 10번이라는 트랜잭션 번호를 부여받았는데, 그때부터 사용자 B의 10번 트랜잭션 안에서 실행되는 모든 SELECT 쿼리는 트랜잭션 번호가 10보다 작은 트랜잭션 번호에서 변경한 것만 보게 된다.  
+  
+위의 그림에서는 언두 영역에 백업된 데이터가 하나만 있는 것으로 표현했지만 사실 하나의 레코드에 대해 백업이 하나 이상 얼마든지 존재할 수 있다. 한 사용자가 BEGIN으로 트랜잭션을 시작하고 장시간 트랜잭션을 종료하지 않으면 언두 영역이 백업된 데이터로 무한정 커질 수도 있다. 이렇게 언두에 백업된 레코드가 많아지면 MySQL 서버의 처리 성능이 떨어질 수 있다.  
+  
+REPEATABLE READ 격리 수준에서도 다음과 같은 부정합이 발생할 수 있다.  
+![](https://github.com/euichaan/TIL/blob/main/img/REPEATABLE%20READ%202.png)  
+참고로, SELECT ... FOR UPDATE는 SELECT 쿼리가 읽은 레코드에 대해서 쓰기 잠금을 건다.  
+  
+한 트랜잭션 내에서 두 번의 SELECT ... FOR UPDATE 쿼리 결과는 서로 다르다. **이렇게 다른 트랜잭션에서 수행한 변경 작업에 의해 레코드가 보였다 안 보였다 하는 현상을 PHANTOM READ(또는 PHANTOM ROW)** 라고 한다. SELECT ... FOR UPDATE 쿼리는 SELECT하는 레코드에 쓰기 잠금을 걸어야 하는데, 언두 레코드에는 잠금을 걸 수 없다. 그래서 SELECT ... FOR UPDATE 나 SELECT ... LOOCK IN SHARE MODE로 조회되는 레코드는 언두 영역의 변경 전 데이터를 가져오는 것이 아니라 현재 레코드의 값을 가져오게 되는 것이다.  
+## 4.4 SERIALIZABLE
+가장 단순한 격리 수준이면서 동시에 가장 엄격한 격리 수준이다. 그만큼 동시 처리 성능도 다른 트랜잭션 격리 수준보다 떨어진다. InnoDB 테이블에서 기본적으로 순수한 SELECT 작업은 아무런 레코드 잠금도 설정하지 않고 실행된다. (Non-locking consistent read)라는 말이 이를 의미하는 것이다. 하지만 트랜잭션의 격리 수준이 SERIALIZABLE로 설정되면 읽기 작업도 공유 잠금(읽기 잠금)을 획득해야만 하며, 동시에 다른 트랜잭션은 그러한 레코드를 변경하지 못하게 된다. 즉, 한 트랜잭션에서 읽고 쓰는 레코드를 다른 트랜잭션에서는 절대 접근할 수 없는 것이다.  
+SERIALIZABLE 격리 수준에서는 InnoDB 스토리지 엔진에서는 갭 락과 넥스트 키 락 덕분에 REPEATABLE READ 격리 수준에서도 이미 "PHANTOM READ"가 발생하지 않기 때문에 굳이 SERIALIZABLE을 사용할 필요성은 없어 보인다.  
+(잠금을 동반한 SELECT 쿼리는 예외적인 상황으로 볼 수 있다.)  
