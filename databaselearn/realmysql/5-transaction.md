@@ -317,12 +317,18 @@ KILL 17;
 ```
 # 4. MySQL의 격리 수준
 **트랜잭션의 격리 수준(isolation level)이란 여러 트랜잭션이 동시에 처리될 때 특정 트랜잭션이 다른 트랜잭션에서 변경하거나 조회하는 데이터를 볼 수 있게 허용할지 말지를 결정하는 것이다.**  
-격리 수준은 크게 "READ UNCOMMITTED", "READ COMMITED", "REPEATABLE READ", "SERIALIZABLE"의 4가지로 나뉜다. "DIRTY READ"라고도 하는 READ UNCOMMITTED는 일반인 데이터베이스에서는 거의 사용하지 않고, SERIALIZABLE 또한 동시성이 중요한 데이터베이스에서는 거의 사용되지 않는다. **4개의 격리 수준에서 뒤로 갈수록 각 트랜잭션 간의 데이터 격리(고립) 정도가 높아지며**, 동시 처리 성능도 떨어지는 것이 일반적이라고 볼 수 있다. 격리 수준이 높아질수록 MySQL 서버의 처리 성능이 많이 떨어질 것으로 생각하는 사용자가 많은데, 사실 SERIALIZABLE 격리 수준이 아니면 크게 성능의 개선이나 저하는 발생하지 않는다.  
+격리 수준은 크게 "READ UNCOMMITTED", "READ COMMITTED", "REPEATABLE READ", "SERIALIZABLE"의 4가지로 나뉜다. "DIRTY READ"라고도 하는 READ UNCOMMITTED는 일반인 데이터베이스에서는 거의 사용하지 않고, SERIALIZABLE 또한 동시성이 중요한 데이터베이스에서는 거의 사용되지 않는다. **4개의 격리 수준에서 뒤로 갈수록 각 트랜잭션 간의 데이터 격리(고립) 정도가 높아지며**, 동시 처리 성능도 떨어지는 것이 일반적이라고 볼 수 있다. 격리 수준이 높아질수록 MySQL 서버의 처리 성능이 많이 떨어질 것으로 생각하는 사용자가 많은데, 사실 SERIALIZABLE 격리 수준이 아니면 크게 성능의 개선이나 저하는 발생하지 않는다.  
   
 데이터베이스의 격리 수준을 이야기하면 항상 함께 언급되는 세 가지 부정합의 문제점이 있다. 이 세가지 부정합의 문제는 격리 수준의 레벨에 따라 발생할 수도 있고 발생하지 않을 수도 있다.  
-||DRITY READ|NON-REPEATABLE READ|PHANTOM READ|
-|------|---|---|
-|READ UNCOMMITTED|발생|발생|발생|
-|READ COMMITED|없음|발생|발생|
-|REPEATABLE READ|없음|없음|발생(InnoDB는 없음)|
-|SERIALIZABLE|없음|없음|없음|
+|  | DIRTY READ | NON-REPEATABLE READ | PHANTOM READ |
+| --- | --- | --- | --- |
+| READ UNCOMMITTED | 발생 | 발생 | 발생 |
+| READ COMMITTED | 없음 | 발생 | 발생 |
+| REPEATABLE READ | 없음 | 없음 | 발생(InnoDB 없음) |
+| SERIALIZABLE | 없음 | 없음 | 없음 |
+InnoDB에서는 독특한 특성 때문에 REPEATABLE READ 격리 수준에서도 PHANTOM READ가 발생하지 않는다. 오라클 같은 DBMS에서는 주로 READ COMMITED 수준을 많이 사용하며, MySQL에서는 REPEATABLE READ를 주로 사용한다.  
+  
+## 4.1 READ UNCOMMITTED
+READ UNCOMMITED 격리 수준에서는 그림과 같이 각 트랜잭션에서의 변경 내용이 COMMIT이나 ROLLBACK 여부에 상관없이 다른 트랜잭션에서 보인다.  
+
+
