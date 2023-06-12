@@ -325,7 +325,8 @@ KILL 17;
 | READ UNCOMMITTED | 발생 | 발생 | 발생 |
 | READ COMMITTED | 없음 | 발생 | 발생 |
 | REPEATABLE READ | 없음 | 없음 | 발생(InnoDB 없음) |
-| SERIALIZABLE | 없음 | 없음 | 없음 |
+| SERIALIZABLE | 없음 | 없음 | 없음 |  
+  
 InnoDB에서는 독특한 특성 때문에 REPEATABLE READ 격리 수준에서도 PHANTOM READ가 발생하지 않는다. 오라클 같은 DBMS에서는 주로 READ COMMITED 수준을 많이 사용하며, MySQL에서는 REPEATABLE READ를 주로 사용한다.  
   
 ## 4.1 READ UNCOMMITTED
