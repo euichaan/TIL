@@ -19,7 +19,7 @@ init(), service(), destroy()
   
 ## 서블릿 생명주기(life-cycle)
 init(), service(), destroy() 메서드를 `라이프 사이클(life-cycle)` 메서드라고 부른다.  
-![](img/servlet-lifecycle.png)
+![](/Users/hwang-uichan/Study/TIL/img/servlet-lifecycle.png)
 ```
 서블릿 일생은 사실 매우 간단합니다. 왜냐하면 서블릿은 오직 하나의 중요한 상태를 가지기 때문입니다. 여기서 중요한 상태는 초기화(initialized)를 말합니다.
 서블릿이 초기화되지 않았다는 말은, 초기화되는 중(생성자를 실행하거나 init() 메서드를 실행하지 않았거나)이거나, 아니면 소멸하는 중(destroy() 메서드를 실행)이거나,
