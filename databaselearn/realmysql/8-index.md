@@ -284,7 +284,7 @@ WHERE birth_date>='1965-02-01';
 데이터 레코드 건수가 작은 경우에는 루트 노드와 리프 노드만 있을 수도 있다.  
   
 두 번째 칼럼의 정렬은 첫 번째 칼럼에 의존해서 정렬돼 있다. 칼럼이 4개인 인덱스를 생성한다면 세 번째 칼럼은 두 번째 칼럼에 의존, 네 번쨰 칼럼은 세 번째 칼럼에 의존해서 정렬된다.  
-다중 칼럼 인덳에서는 인덱스 내에서 각 칼럼의 위치(순서)가 상당히 중요하다.  
+다중 칼럼 인덱스에서는 인덱스 내에서 각 칼럼의 위치(순서)가 상당히 중요하다.  
 ## 3.6 B-Tree 인덱스의 정렬 및 스캔 방향
 인덱스를 생성할 때 설정한 정렬 규칙에 따라서 인덱스의 키 값은 항상 오름차순이거나 내림차순으로 정렬되어 저장된다. 인덱스를 어느 방향으로 읽을지는 쿼리에 따라 옵티마이저가 실시간으로 만들어내는 실행 계획에 따라 결정된다.  
   
@@ -502,3 +502,35 @@ CREATE TABLE user (
 EXPLAIN SELECT * FROM user WHERE CONCAT(first_name,' ',last_name)='euichan Hwang';
 ```
 만약 이 예제를 실행했을 때 옵티마이저가 표시하는 실행 계획이 ix_fullname 인덱스를 사용하지 않는 것으로 표시된다면 CONCAT 함수에 사용된 공백 문자 리터럴 때문일 가능성이 높다.  
+이 경우 다음 3개 시스템 변수의 값을 동일 콜레이션(이 책에서는 "utf8mb4_0900_ai_ci")으로 일치시킨 후, 다시 테스트를 수행해보자.  
+```
+가상 칼럼(Virtual Column)을 이용한 방법과 직접 함수를 이용한 함수 기반 인덱스는 내부적으로 동일한 구현 방법을 사용한다.
+결국 여기서 알아본 방법은 내부적인 구현이 동일한 것이라고 볼 수 있으며, 어떤 방법을 사용하더라도 둘의 성능 차이는 발생하지 않는다는 것을 의미한다.
+```
+# 7. 멀티 밸류 인덱스
+전문 검색 인덱스를 제외한 모든 인덱스는 레코드 1건이 1개의 인덱스 키 값을 가진다. 즉, 인덱스 키와 데이터 레코드는 1:1의 관계를 가진다. 하지만 멀티 밸류(Multi-Value) 인덱스는 하나의 데이터 레코드가 여러 개의 키 값을 가질 수 있는 형태의 인덱스다. 일반적인 RDBMS를 기준으로 생각하면 이러한 인덱스는 정규화에 위배되는 형태다. 하지만 최근 RDBMS들이 JSON 데이터 타입을 지원하기 시작하면서 JSON 배열 타입의 필드에 저장된 원소(Element)들에 대한 인덱스 요건이 발생한 것이다.  
+  
+```sql
+CREATE TABLE user (
+    user_id BIGINT,
+    first_name VARCHAR(10),
+    last_name VARCHAR(10),
+    PRIMARY KEY (user_id),
+    credit_info JSON,
+    INDEX my_creditscores ( (CAST(credit_info->'$.credit_scores' AS UNSIGNED ARRAY)) )
+);
+
+INSERT INTO user VALUES (1, 'euichan', 'Hwang', '{"credit_scores":[360,353,351]}');
+```
+멀티 밸류 인덱스를 활용하기 위해서는 일반적인 조건 방식을 사용하면 안 되고, 반드시 다음 함수들을 이용해서 검색해야 옵티마이저가 인덱스를 활용한 실행 계획을 수립한다.  
+- MEMBER OF()  
+- JSON_CONTAINS()  
+- JSON_OVERLAPS()  
+  
+```sql
+SELECT * FROM user WHERE 360 MEMBER OF(credit_info ->'$.credit_scores');
+```
+```
+MySQL 8.0.21 버전에서는 CHAR/VARCHAR 타입에 대해서는 멀티 밸류 인덱스를 지원하지 않는다.
+```
+  
