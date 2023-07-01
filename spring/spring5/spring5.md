@@ -77,3 +77,11 @@ MemberDao memberDao = new CachedMemberDao();
 MEmberRegisterService regSvc = new MemberRegisterService(memberDao);
 ChagedPasswordService pwdSvc = new ChangePasswordService(memberDao);
 ```
+## 객체 조립기
+객체를 생성하고 의존 객체를 주입해주는 클래스를 따로 작성. 의존 객체를 주입한다는 것은 서로 다른 두 객체를 조립한다고 생각할 수 있는데, 이런 의미에서 이 클래스를 조립기라고도 표현한다.  
+조립기는 객체를 생성하고 의존 객체를 주입하는 기능을 제공한다. 또한 특정 객체가 필요한 곳에 객체를 제공한다.  
+
+## 스프링의 DI 설정 
+스프링은 DI를 지원하는 조립기이다.  
+AnnotationConfigApplicationContext를 사용해서 스프링 컨테이너를 생성한다. **스프링 컨테이너는 Assembler와 동일하게 객체를 생성하고 의존 객체를 주입한다.**  
+AnnotationConfigApplicationContext는 설정 파일로부터 생성할 객체와 의존 주입 대상을 정한다.  
