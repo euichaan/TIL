@@ -651,3 +651,42 @@ CREATE TABLE tb_unique (
 똑같은 칼럼에 대해 프라이머리 키와 유니크 인덱스를 동일하게 생성한 경우도 있는데, 이 또한 불필요한 중복이므로 주의하자.  
   
 결론적으로 유일성이 꼭 보장돼야 하는 칼럼에 대해서는 유니크 인덱스를 생성하되, 꼭 필요하지 않다면 유니크 인덱스보다는 유니크하지 않은 세컨더리 인덱스를 생성하는 방법도 한 번씩 고려해 보자.  
+```
+프라이머리 키는 NULL을 허용하지 않으며 중복을 허용하지 않는다.
+프라이머리 키를 제외한 나머지 모든 인덱스는 세컨더리 인덱스(Secondary Index)로 분류한다. 유니크 인덱스는 대체 키라고도 하는데, 별도로 분류하기도 하고 그냥 세컨더리 인덱스로 분류하기도 한다.
+```
+# 10. 외래키
+MySQL에서 외래키는 InnoDB 스토리지 엔진에서만 생성할 수 있으며, **외래키 제약이 설정되면 자동으로 연관되는 테이블의 칼럼에 인덱스까지 생성된다.**  
+외래키가 제거되지 않은 상태에서는 자동으로 생성된 인덱스를 삭제할 수 없다.  
+  
+InnoDB의 외래키 관리에는 중요한 두 가지 특징이 있다.  
+- 테이블의 변경(쓰기 잠금)이 발생하는 경우에만 잠금 경합(잠금 대기)이 발생한다.  
+- 외래키와 연관되지 않은 칼럼의 변경은 최대한 잠금 경합(잠금 대기)을 발생시키지 않는다.  
+  
+```sql
+CREATE table tb_parent (
+    id INT NOT NULL,
+    fd VARCHAR(100) NOT NULL, PRIMARY KEY (id)
+)ENGINE=InnoDB;
+
+CREATE table tb_child (
+    id INT NOT NULL,
+    pid INT DEFAULT NULL, -- // parent.id 칼럼 참조
+    fd VARCHAR(100) NOT NULL, PRIMARY KEY (id),
+    KEY ix_parentid (pid),
+    CONSTRAINT child_ibfk_1 FOREIGN KEY (pid) REFERENCES tb_parent (id) ON DELETE CASCADE
+)ENGINE=InnoDB;
+
+INSERT INTO tb_parent VALUES (1, 'parent-1'), (2, 'parent-2');
+INSERT INTO tb_child VALUES (100, 1, 'child-100');
+```
+## 10.1 자식 테이블의 변경이 대기하는 경우
+|작업 번호|커넥션-1|커넥션-2|
+|------|---|---|
+|1|BEGIN;||
+|2|UPDATE tb_parent SET fd='changed-2' WHERE id=2;||
+|3||BEGIN;|
+|4||UPDATE tb_child SET pid=2 WHERE id=100;|
+|5|ROLLBACK;||
+|6||Query OK, 1 row affected|
+  
