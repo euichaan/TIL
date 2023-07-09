@@ -371,3 +371,26 @@ getBean() 메서드는 BeanFactory 인터페이스에 정의되어 있다. 실�
 스프링 컨테이너는 자동 주입, 라이프사이클 관리 등 단순 객체 생성 외에 객체 관리를 위한 다양한 기능을 제공하는데 빈으로 등록한 객체에만 기능을 적용한다.  
   
 # Chaptor 04 의존 자동 주입
+## @Autowired 애노테이션을 이용한 의존 자동 주입
+자동 주입 기능을 사용하면 스프링이 알아서 의존 객체를 찾아서 주입한다.  
+필드에 @Autowired 애노테이션을 붙임으로 설정 클래스에서 의존을 주입하지 않아도 된다.  
+```
+의존을 주입하지 않아도 스프링이 @Autowired가 붙은 필드에 해당 타입의 빈 객체를 찾아서 주입한다
+```
+빈 객체의 메서드에 @Autowired 애노테이션을 붙이면 스프링은 해당 메서드를 호출한다. **이때 메서드 파라미터 타입에 해당하는 빈 객체를 찾아 인자로 주입한다.**  
+
+**@Autowired 애노테이션을 필드나 세터 메서드에 붙이면 스프링은 타입이 일치하는 빈 객체를 찾아서 주입한다.**  
+  
+## 일치하는 빈이 없는 경우
+```
+org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'memberRegisterService': Unsatisfied dependency expressed through field 'memberDao';
+NoSuchBeanDefinitionException: No qualifying bean of type 'spring.MemberDao' available 
+```
+memberRegisterService 빈을 생성하는데 에러가 발생했다는 내용이 나온다. 이어서 'memberDao' 필드에 대한 의존을 충족하지 않는다는 내용이 나오고 적용할 수 없는 MemberDao 타입의 빈이 없다는 내용이 나온다.  
+  
+반대로 @Autowired 애노테이션을 붙인 주입 대상에 일치하는 빈이 두 개 이상이면?  
+```
+No qualifying bean of type 'me.euichan.javap.spring.chapter4.spring.MemberPrinter' available: expected single matching bean but found 2: memberPrinter1,memberPrinter2
+```
+MemberPrinter 타입의 빈을 한정할 수 없는데 해당 타입 빈이 한 개가 아니라 두 개의 빈을 발견했다는 사실을 알려준다.  
+  
