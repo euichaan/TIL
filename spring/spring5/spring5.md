@@ -394,3 +394,106 @@ No qualifying bean of type 'me.euichan.javap.spring.chapter4.spring.MemberPrinte
 ```
 MemberPrinter 타입의 빈을 한정할 수 없는데 해당 타입 빈이 한 개가 아니라 두 개의 빈을 발견했다는 사실을 알려준다.  
   
+## @Qaulifier 애노테이션을 이요한 의존 객체 선택
+자동 주입 가능한 빈이 두 개 이상아면 자동 주입할 빈을 지정할 수 있는 방법이 필요하다. 이때 @Qualifier 애노테이션을 사용한다.  
+@Qualifier 애노테이션을 사용하면 자동 주입 대상 빈을 한정할 수 있다.  
+  
+@Qualifier 애노테이션은 두 위치에서 사용 가능하다. 첫 번째는 @Bean 애노테이션을 붙인 빈 설정 메서드이다.  
+```java
+	@Bean
+	@Qualifier("printer")
+	public MemberPrinter memberPrinter1() {
+		return new MemberPrinter();
+	}
+
+	@Bean
+	public MemberPrinter memberPrinter2() {
+		return new MemberPrinter();
+	}
+```
+이 설정은 해당 빈의 한정 값으로 "printer"를 지정한다. 이렇게 지정한 한정 값은 @Autowired 애노테이션에서 자동 주입할 빈을 한정할 때 사용한다.  
+```java
+	@Autowired
+	@Qualifier("printer")
+	public void setPrinter(final MemberPrinter printer) {
+		this.printer = printer;
+	}
+```
+setPrinter 메서드에 @Autowired 애노테이션을 붙였으므로 MemberPrinter타입의 빈을 자동 주입한다. 이때 @Qualifier 애노테이션 값이 "printer"이므로 한정 값이 "printer"인 빈을 의존 주입 후보로 사용한다.  
+  
+빈 설정에 @Qualifier 애노테이션이 없으면 빈의 이름을 한정자로 지정한다.  
+**@Autowired는 타입 매칭을 시도하고, 이때 여러 빈이 있으면 필드 이름, 파라미터 이름으로 빈 이름을 추가 매칭한다.(필드나 파라미터 이름을 한정자로 사용한다.)**  
+```java
+public class MemberInfoPrinter2 {
+
+	@Autowired
+	private MemberPrinter printer; // 한정자로 필드 이름인 printer를 사용한다.
+}
+```
+## @Autowired 애노테이션의 필수 여부
+```java
+public class MemberPrinter {
+
+	private DateTimeFormatter dateTimeFormatter;
+
+	public void print(Member member) {
+		if (dateTimeFormatter == null) {
+			System.out.printf(
+				"회원 정보: 아이디=%d, 이메일=%s, 이름=%s, 등록일=%tF\n",
+				member.getId(), member.getEmail(), member.getName(), member.getRegisterDateTime());
+		} else {
+			System.out.printf(
+				"회원 정보: 아이디=%d, 이메일=%s, 이름=%s, 등록일=%s\n",
+				member.getId(), member.getEmail(), member.getName(),
+				dateTimeFormatter.format(member.getRegisterDateTime()));
+		}
+	}
+
+	@Autowired
+	public void setDateTimeFormatter(final DateTimeFormatter dateTimeFormatter) {
+		this.dateTimeFormatter = dateTimeFormatter;
+	}
+}
+```
+print() 메서드는 dateTimeFormatter가 null인 경우에도 알맞게 동작한다. 즉 반드시 setDateTimeFormatter()를 통해서 의존 객체를 주입할 필요는 없다. 그런데 **@Autowired 애노테이션은 기본적으로 @Autowired 애노테이션을 붙인 타입에 해당하는 빈이 존재하지 않으면 익셉션을 발생한다.**  
+이렇게 자동 주입할 대상이 필수가 아닌 경우에는 @Autowired 애노테이션의 required 속성을 false로 지정하면 된다.  
+  
+@Autowired 애노테이션의 required 속성을 false로 지정하면 매칭되는 빈이 없어도 익셉션이 발생하지 않으며 자동 주입을 수행하지 않는다. 스프링 5 버전부터는 required 속성을 false로 하는 대신에 자바 8의 Optional을 사용해도 된다.  
+```java
+	// @Autowired(required = false)
+	// public void setDateTimeFormatter(final DateTimeFormatter dateTimeFormatter) {
+	// 	this.dateTimeFormatter = dateTimeFormatter;
+	// }
+
+	@Autowired
+	public void setDateTimeFormatter(Optional<DateTimeFormatter> formatterOpt) {
+		if (formatterOpt.isPresent()) {
+			this.dateTimeFormatter = formatterOpt.get();
+		} else {
+			this.dateTimeFormatter = null;
+		}
+	}
+```
+또 다른 방법은 `@Nullable` 애노테이션을 사용하는 것이다.  
+```java
+@Autowired
+	public void setDateTimeFormatter(@Nullable final DateTimeFormatter dateTimeFormatter) {
+		this.dateTimeFormatter = dateTimeFormatter;
+	}
+```
+세터 메서드에 @Nullable 애노테이션을 의존 주입 대상 파라미터에 붙이면, 스프링 컨테이너는 세터 메서드를 호출할 때 자동 주입할 빈이 존재하면 해당 빈을 인자로 전달하고, 존재하지 않으면 인자로 null을 전달한다.  
+```
+(required=false) 의 경우는 대상 빈이 존재하지 않으면 세터 메서드를 호출하지 않는다.
+@Nullable의 경우 자동 주입할 빈이 존재하지 않아도 메서드가 호출된다.
+```
+앞서 설명한 세 가지 방식은 필드에도 그대로 적용된다.  
+  
+@Autowired 애노테이션의 required 속성이 false이면 일치하는 빈이 없으면 값 할당을 하지 않는다.  
+@Nullable 애노테이션은 일치하는 빈이 없을 때 null 값을 할당한다.  
+Optional 타입은 매칭되는 빈이 없으면 값이 없는 Optional을 할당한다.  
+  
+## 6. 자동 주입과 명시적 의존 주입 간의 관계
+설정 클래스에서 의존을 주입했는데 자동 주입 대상이면 어떻게 될까?  
+
+설정 클래스에서 세터 메서드를 통해 의존을 주입해도 해당 세터 메서드에 @Autowired 애노테이션이 붙어 있으면 `자동 주입을 통해 일치하는 빈`을 주입한다. 따라서 @Autowired 애노테이션을 사용했다면 설정 클래스에서 객체를 주입하기보다는 스프링이 제공하는 자동 주입 기능을 사용하는 편이 낫다.  
+  
