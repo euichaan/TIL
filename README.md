@@ -39,6 +39,9 @@
   
 ### JUnit
 - [JUnit method](https://github.com/euichaan/TIL/blob/main/test/junit/junit.md)  
+  
+### MockMvc
+- [MockMvc](https://github.com/euichaan/TIL/blob/main/test/mockmvc/mockmvc.md)  
         
 ## Clean Code
 - [Clean Code 요약정리](https://github.com/euichaan/TIL/blob/main/cleancode/cleancode.md)  
