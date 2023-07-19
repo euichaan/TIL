@@ -74,10 +74,13 @@
 ### SQL 첫걸음
 - [SQL 첫걸음](https://github.com/euichaan/TIL/tree/main/databaselearn/sql-first)  
   
+### 인덱스
+- [인덱스 관련 질문과 적용](https://github.com/euichaan/TIL/blob/main/databaselearn/index/index.md)
+  
 ### Real MySQL 8.0 1권
 - [MySQL 아키텍처](https://github.com/euichaan/TIL/blob/main/databaselearn/realmysql/4-architecture.md)  
 - [트랜잭션과 잠금](https://github.com/euichaan/TIL/blob/main/databaselearn/realmysql/5-transaction.md)  
-- [인덱스](https://github.com/euichaan/TIL/blob/main/databaselearn/realmysql/8-index.md)  
+- [인덱스 개론](https://github.com/euichaan/TIL/blob/main/databaselearn/realmysql/8-index.md)  
 - [Server Status Variables](https://github.com/euichaan/TIL/blob/main/databaselearn/server-status-variables/status-variables.md)  
   
 ### Real MySQL 8.0 2권
