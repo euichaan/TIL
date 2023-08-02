@@ -54,6 +54,7 @@
 ### Spring Intro
 - [Spring Introduction](https://github.com/euichaan/TIL/blob/main/spring/spring-introduction/spring-introduction.md)  
 - [Spring core principles-basic](https://github.com/euichaan/TIL/blob/main/spring/spring-core-principles-basic/spring-core-basic.md)  
+- [웹 스코프와 프록시 동작 원리](https://github.com/euichaan/TIL/blob/main/spring/webscope-proxy/webscope-proxy.md)  
   
 ### Spring MVC
 - [spring mvc 패턴 그림 정리](https://github.com/euichaan/TIL/blob/main/img/spring%20mvc.jpg) 
