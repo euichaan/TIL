@@ -762,3 +762,131 @@ public class AppCtxWithPrototype {
 ```
 프로토타입 범위를 갖는 빈은 **완전한 라이프사이클을 따르지 않는다는 점에 주의**해야 한다. 스프링 컨테이너는 프로토타입의 빈 객체를 생성하고 프로퍼티를 설정하고 초기화 작업까지는 수행하지만, 컨테이너를 종료한다고 해서 프로토타입 **빈 객체의 소멸 메서드를 실행하지는 않는다.** 따라서 프로토타입 범위의 빈을 사용할 때는 빈 객체의 소멸 처리를 코드에서 직접 해야 한다.  
   
+# Chapter 07 AOP 프로그래밍 
+```
+		<dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context</artifactId>
+        <version>5.0.2.RELEASE</version>
+        </dependency>
+   	<dependency>
+        <groupId>org.aspectj</groupId>
+        <artifactId>aspectjweaver</artifactId>
+        <version>1.8.13</version>
+    </dependency>
+```
+aspectjweaver 의존성을 추가한다. 이 모듈은 스프링이 AOP를 구현할 때 사용하는 모듈이다.  
+스프링 프레임워크의 AOP 기능은 `spring-aop` 모듈이 제공하는데 spring-context 모듈을 의존 대상에 추가하면 spring-aop 모듈도 함께 의존 대상에 포함된다.  
+따라서 spring-aop 모듈에 대한 의존을 따로 추가하지 않아도 된다. aspectjweaver 모듈은 AOP를 설정하는데 필요한 애노테이션을 제공하므로 이 의존을 추가해야 한다.  
+  
+## 2. 프록시와 AOP
+계승 구현 클래스의 실행 시간을 출력하려면 어떻게 해야 할까? 쉬운 방법은 메서드의 시작과 끝에서 시간을 구하고 이 두 시간의 차이를 출력하는 것이다.  
+```java
+public class ImpeCalculator implements Calculator {
+
+	@Override
+	public long factorial(final long num) {
+		long start = System.currentTimeMillis();
+		long result = 1;
+		for (long i = 1; i <= num; ++i) {
+			result *= i;
+		}
+		long end = System.currentTimeMillis();
+		System.out.printf("ImpeCalculator.factorial(%d) 실행 시간 = %d\n", num, (end - start));
+		return result;
+	}
+}
+```
+RecCalculator 클래스는 약간 복잡해지는데, 다음가 같다. 실행 시간을 출력하는 메시지가 3번 출력된다.  
+```java
+public class RecCalculator implements Calculator {
+
+	@Override
+	public long factorial(final long num) {
+		long start = System.currentTimeMillis();
+		try {
+			if (num == 0) {
+				return 1;
+			} else {
+				return num * factorial(num - 1);
+			}
+		} finally {
+			long end = System.currentTimeMillis();
+			System.out.printf("RecCalculator.factorial(%d) 실행 시간 = %d\n", num, (end - start));
+		}
+	}
+}
+```
+RecCalculator를 고려하면 실행 시간을 출력하기 위해 기존 코드를 변경하는 것보다는 차라리 다음 코드처럼 메서드 실행 전후에 값을 구하는 게 나을지도 모른다.  
+```java
+ImpeCalculator implCal = new ImpeCalculator();
+long start1 = System.currentTimeMillis();
+long fiveFact1 = implCal.factorial(5);
+long end1 = System.currentTimeMillis();
+System.out.printf("ImpeCalculator.factorial(5) 실행 시간 = %d\n", (end1 - start1));
+		
+RecCalculator recCal = new RecCalculator();
+long start2 = System.currentTimeMillis();
+long fiveFact2 = recCal.factorial(5);
+long end2 = System.currentTimeMillis();
+System.out.printf("RecCalculator.factorial(5) 실행 시간 = %d\n", (end2 - start2));
+```
+그런데 위 방식도 문제가 있다. 실행 시간을 밀리초가 아닌 나노초 단위로 구해야 한다면? 중복된 코드를 모두변경해야 한다.  
+기존 코드를 수정하지 않고 코드 중복도 피할 수 있는 방법은 없을까? 이때 출현하는 것이 바로 **프록시 객체**이다.  
+  
+```java
+public class ExeTimeCalculator implements Calculator {
+	
+	private final Calculator delegate;
+
+	public ExeTimeCalculator(final Calculator delegate) {
+		this.delegate = delegate;
+	}
+
+	@Override
+	public long factorial(final long num) {
+		long start = System.nanoTime();
+		long result = delegate.factorial(num);
+		long end = System.nanoTime();
+		System.out.printf("%s.factorial(%d) 실행 시간 = %d\n", delegate.getClass().getSimpleName(), num, (end - start));
+		return result;
+	}
+}
+```
+ExeTimeCalculator 클래스를 사용하면 다음과 같은 방법으로 ImpeCalculator의 실행 시간을 측정할 수 있다.  
+```java
+ImpeCalculator impeCal = new ImpeCalculator();
+ExeTimeCalculator calculator = new ExeTimeCalculator(impeCal);
+final long result = calculator.factorial(5);
+System.out.println(result);
+```
+실제로 실행 시간을 출력하는지 확인하자.  
+```java
+public class MainProxy {
+
+	public static void main(String[] args) {
+		ExeTimeCalculator ttCal1 = new ExeTimeCalculator(new ImpeCalculator()); // ImpeCalculator 객체의 factorial(20) 실행 시간을 출력 
+		System.out.println(ttCal1.factorial(20));
+
+		ExeTimeCalculator ttCal2 = new ExeTimeCalculator(new RecCalculator()); // RecCalculator 객체의 factorial(20) 실행 시간을 출력 
+		System.out.println(ttCal2.factorial(20));
+	}
+}
+```
+다음을 알 수 있다.  
+  
+- 기존 코드를 변경하지 않고 실행 시간을 출력할 수 있다.  
+- 실행 시간을 구하는 코드의 중복을 제거했다. 나노초 대신에 밀리초를 사용해서 실행 시간을 구하고 싶다면 ExeTimeCalculator 클래스만 변경하면 된다.  
+  
+이것이 가능한 이유는 ExeTimeCalculator 클래스를 다음과 같이 구현했기 때문이다.  
+- **factorial() 기능 자체를 직접 구현하기보다는 다른 객체에 factorial()의 실행을 위임한다.**  
+- 계산 기능 외에 다른 부가적인 기능을 실행한다. 여기서 부가적인 기능은 실행 시간 측정이다.  
+  
+이렇게 **핵심 기능의 실행은 다른 객체에 위임하고 부가적인 기능을 제공하는 객체를 프록시(proxy)라고 부른다.** 실제 핵심 기능을 실행하는 객체는 대상 객체라고 부른다.  
+ExeTimeCalculator 가 프록시이고 ImpeCalculator 객체가 프록시의 대상 객체가 된다.  
+  
+프록시의 특징은 핵심 기능은 구현하지 않는다는 점이다. 핵심 기능을 구현하지 않는 대신 여러 객체에 공통으로 적용할 수 있는 기능을 구현한다.  
+  
+정리하면 ImpeCalculator와 RecCalculator는 팩토리얼을 구한다는 **핵심 기능 구현**에 집중하고 프록시인 ExeTimeCalculator는 실행 시간 측정이라는 **공통 기능 구현**에 집중한다.  
+이렇게 공통 기능 구현과 핵심 기능 구현을 분리하는 것이 AOP의 핵심이다.  
+
