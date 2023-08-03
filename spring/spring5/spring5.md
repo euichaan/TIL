@@ -889,4 +889,141 @@ ExeTimeCalculator 가 프록시이고 ImpeCalculator 객체가 프록시의 대�
   
 정리하면 ImpeCalculator와 RecCalculator는 팩토리얼을 구한다는 **핵심 기능 구현**에 집중하고 프록시인 ExeTimeCalculator는 실행 시간 측정이라는 **공통 기능 구현**에 집중한다.  
 이렇게 공통 기능 구현과 핵심 기능 구현을 분리하는 것이 AOP의 핵심이다.  
+  
+### 2.1 AOP
+AOP는 Aspect Oriented Programming의 약자로, 여러 객체에 공통으로 적용할 수 있는 기능을 분리해서 재사용성을 높여주는 프로그래밍 기법이다.  
+**AOP는 핵심 기능과 공통 기능의 구현을 분리함**으로써 핵심 기능을 구현한 코드의 수정 없이 공통 기능을 적용할 수 있게 만들어 준다.  
+  
+AOP의 기본 개념은 핵심 기능에 공통 기능을 삽입하는 것이다. 즉 핵심 기능의 코드를 수정하지 않으면서 공통 기능의 구현을 추가하는 것이 AOP다.  
+핵심 기능에 공통 기능을 삽입하는 방법에는 다음 세 가지가 있다.  
+- 컴파일 시점에 코드에 공통 기능을 삽입하는 방법  
+- 클래스 로딩 시점에 바이트코드에 공통 기능을 삽입하는 방법  
+- 런타임에 프록시 객체를 생성해서 공통 기능을 삽입하는 방법  
+  
+첫 번째 방법은 AOP 개발 도구가 소스 코드를 컴파일 하기 전에 공통 구현 코드를 소스에 삽입하는 방식으로 동작한다.  
+두 번째 방법은 클래스를 로딩할 때 바이트 코드에 공통 기능을 클래스에 삽입하는 방식으로 동작한다.  
+이 두 가지는 스프링 AOP에서는 지원하지 않으며 AspectJ와 같이 AOP 전용 도구를 사용해서 적용할 수 있다.  
+  
+스프링이 제공하는 AOP 방식은 프록시를 이용한 세 번째 방식이다. 두 번째 방식을 일부 지원하지만 널리 사용되는 방법은 프록시를 이용한 방식이다.  
+프록시 방식은 앞서 살펴본 것처럼 중간에 프록시 객체를 생성한다. 실제 객체의 기능을 실행하기 전. 후에 공통 기능을 호출한다.  
 
+**스프링 AOP는 프록시 객체를 자동으로 만들어준다.** 따라서 ExeTimeCalculator 클래스처럼 상위 타입의 인터페이스를 상속받은 프록시 클래스를 직접 구현할 필요가 없다.  
+단지 공통 기능을 구현한 클래스만 알맞게 구현하면 된다.  
+  
+AOP에서 공통 기능을 Aspect라고 하는데 Aspect 외에 알아두어야 할 용어는 다음과 같다.  
+- Advice: **언제 공통 관심 기능을 핵심 로직에 적용할 지를 정의하고 있다.** 예를 들어 '메서드를 호출하기 전'(언제)에 '트랜잭션 시작'(공통 기능) 기능을 적용한다는 것을 정의한다.  
+- JoinPoint: Advice를 적용 가능한 지점을 의미한다. 메서드 호출, 필드 값 변경 등이 JoinPoint에 해당한다. 스프링은 프록시를 이용해서 AOP를 구현하기 때문에 메서드 호출에 대한 JoinPoint만 지원한다.  
+- PointCut: JointPoint의 부분 집합으로서 **실제 Advice가 적용되는 JoinPoint를 나타낸다.** 스프링에서는 정규 표현식이나 AspectJ의 문법을 이용하여 PointCut을 정의할 수 있다.  
+- Weaving: Advice를 핵심 로직 코드에 적용하는 것을 Weaving이라고 한다.  
+- Aspect: 여러 객체에 공통으로 적용되는 기능을 Aspect라고 한다. 트랜잭션이나 보안 등이 Aspect의 좋은 예이다.  
+  
+### 2.2 Advice의 종류
+Advice(언제 공통 기능을 핵심 로직에 적용할지. 예를 들어 '메서드 호출하기 전')  
+스프링은 프록시를 이용해서 메서드 호출 시점에 Aspect를 적용하기 때문에 구현 가능한 Advice의 종류는 다음과 같다.(Before Advice, After Returning Advice, After Throwing Advice, After Advice, Around Advice)  
+이 중 가장 널리 사용되는 것은 Around Advice이다. 이유는 대상 객체으 메서드를 실행하기 전/후, 익셉션 발생 시점 등 다양한 시점에 원하는 기능을 삽입할 수 있기 때문이다.  
+`캐시 기능, 성능 모니터링 기능`과 같은 Aspect를 구현할 때에는 Around Advice를 주로 이용한다. 이 책에서도 Around Advice의 구현 방법에 대해서만 살펴볼 것이다.  
+```
+Around Advice: 대상 객체의 메서드 실행 전, 후 또는 익셉션 발생 시점에 공통 기능을 실행하는데 사용된다.
+```
+## 3. 스프링 AOP 구현 
+스프링 AOP를 이용해서 공통 기능을 구현하고 적용하는 방법은 단순하다. 다음과 같은 절차만 따르면 된다.  
+- Aspect로 사용될 클래스에 @Aspect 애노테이션을 붙인다.  
+- @Pointcut 애노테이션으로 공통 기능을 적용할 Pointcut을 적용한다.  
+- 공통 기능을 구현한 메서드에 @Around 애노테이션을 적용한다.  
+  
+## 3.1 @Aspect, @Pointcut, @Around를 이용한 AOP 구현
+개발자는 공통 기능을 제공하는 Aspect 구현 클래스를 만들고 자바 설정을 이용해서 Aspect를 어디에 적용할지 설정하면 된다. Aspect는 @Aspect 애노테이션을 이용해서 구현한다.  
+프록시는 스프링 프레임워크가 알아서 만들어준다.  
+  
+아래 코드는 메서드 실행 전/후(Around Advice)에 사용할 공통 기능(Aspect)이다.  
+```java
+@Aspect
+public class ExeTimeAspect {
+
+	@Pointcut("execution(public * me.euichan.chap07..*(..))")
+	private void publicTarget() {
+	}
+
+	@Around("publicTarget()") // 대상 메서드 실행 전, 후 또는 익셉션 발생 시점에 공통 기능 실행
+	public Object measure(ProceedingJoinPoint joinPoint) throws Throwable {
+		long start = System.nanoTime();
+
+		try {
+			final Object result = joinPoint.proceed();
+			return result;
+		} finally {
+			long finish = System.nanoTime();
+			final Signature sig = joinPoint.getSignature();
+			System.out.printf("%s.%s(%s) 실행 시간 : %d ns\n",
+				joinPoint.getTarget().getClass().getSimpleName(),
+				sig.getName(), Arrays.toString(joinPoint.getArgs()), (finish - start));
+		}
+	}
+}
+```
+@Aspect 애노테이션을 적용한 클래스는 `Advice`와 `Pointcut`을 함께 제공한다.  
+@Pointcut은 공통 기능을 적용할 대상을 설정한다. 현재 설정은 chap07 패키지와 그 하위 패키지에 위치한 타입의 public 메서드를 Pointcut으로 설정한다는 정도만 이해하고 넘어가자.  
+@Around 애노테이션은 Around Advice를 설정한다. @Around 애노테이션의 값이 "publicTarget()"인데 이는 publicTarget() 메서드에 정의한 Pointcut에 공통 기능을 적용한다는 것을 의미한다.  
+publicTarget() 메서드는 chap07 패키지와 그 하위 패키지에 위치한 public 메서드를 Pointcut(실제 Advice가 적용되는 JoinPoint)으로 설정하고 있으므로, chap07 패키지나 그 하위 패키지에 속한 빈 객체의 public 메서드에 @Around가 붙은 measure() 메서드를 적용한다.  
+  
+ProceedingJoinPoint 타입 파라미터는 프록시 대상 객체(실제 핵심 기능을 실행하는 객체)의 메서드를 호출할 때 사용한다. proceed 메서드를 사용해서 실제 대상 객체의 메서드를 호출한다.  
+이 메서드를 호출하면 대상 객체의 메서드가 실행되므로 이 코드 이전과 이후에 공통 기능을 위한 코드를 위치시키면 된다.  
+```
+자바에서 메서드 이름과 파라미터를 합쳐서 메서드 시그니처라고 한다.
+메서드 이름이 다르거나 파라미터 타입, 개수가 다르면 시그니처가 다르다고 표현한다.
+자바에서 메서드의 리턴 타입이나 익셉션 타입은 시그니처에 포함되지 않는다.
+```
+설정 클래스는 다음과 같다.  
+```java
+@Configuration
+@EnableAspectJAutoProxy
+public class AppCtx {
+
+	@Bean
+	public ExeTimeAspect exeTimeAspect() {
+		return new ExeTimeAspect();
+	}
+
+	@Bean
+	public Calculator calculator() {
+		return new RecCalculator();
+	}
+}
+```
+@Aspect 애노테이션을 붙인 클래스를 공통 기능으로 적용하려면 @EnableAspectJAutoProxy 애노테이션을 설정 클래스에 붙여야 한다.  
+이 애노테이션을 추가하면 스프링은 @Aspect 애노테이션이 붙은 빈 객체를 찾아서 빈 객체의 @Pointcut 설정과 @Around 설정을 사용한다.  
+  
+@EnableAspectJAutoProxy 애노테이션은 프록시 생성과 관련된 AnnotationAwareAspectJAutoProxyCreator 객체를 빈으로 등록한다.  
+```java
+@Pointcut("execution(public * chap07..*(..))")
+public void publicTarget() {
+
+}
+
+@Around("publicTarget()")
+public Object measure(ProceedingJointPoint joinPoint) throws Throwable {
+	...
+}
+```
+calculator 빈에 공통 기능이 적용되는지 확인해보자.  
+```java
+public class MainAspect {
+
+	public static void main(String[] args) {
+		final AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(AppCtx.class);
+		final Calculator cal = ac.getBean("calculator", Calculator.class);
+		final long fiveFact = cal.factorial(5);
+		System.out.println("cal.factorial(5) = " + fiveFact);
+		System.out.println(cal.getClass().getName());
+		ac.close();
+	}
+}
+```
+실행 결과는 다음과 같다.  
+```
+RecCalculator.factorial([5]) 실행 시간 : 29750 ns
+cal.factorial(5) = 120
+com.sun.proxy.$Proxy19
+```
+이 출력 결과를 보면 Calculator 타입이 RecCalculator 클래스가 아니고 $Proxy17이다. 이 타입은 스프링이 생성한 프록시 타입이다.  
+AOP를 적용하지 않았으면 리턴한 객체는 프록시 객체가 아닌 RecCalculator 타입이었을 것이다.  
