@@ -8,12 +8,12 @@
 
 ```java
 class card {
-		enum Kind { CLOVER, HEART, DIAMOND, SPADE } // 열거형 Kind를 정의
-		enum Value { TWO, THREE, FOUR } // 열거형 Value를 정의
+	enum Kind { CLOVER, HEART, DIAMOND, SPADE } // 열거형 Kind를 정의
+	enum Value { TWO, THREE, FOUR } // 열거형 Value를 정의
 
-		final Kind kind;
-		final Value value;
-		// 생성자 생략 
+	final Kind kind;
+	final Value value;
+	// 생성자 생략 
 }
 ```
 
@@ -39,12 +39,12 @@ enum Direction { EAST, SOUTH, WEST, NORTH }
 
 ```java
 class Unit {
-		int x, y;
-		Direction dir;
+	int x, y;
+	Direction dir;
 
-		void init() {
-				dir = Direction.EAST;
-		}
+	void init() {
+		dir = Direction.EAST;
+	}
 }
 ```
 
@@ -103,7 +103,7 @@ static E valueOf(String name)
 
 컴파일러가 자동으로 추가..? →
 
-![스크린샷 2023-08-10 오후 3.11.46.png](https://www.notion.so/Enum-02daa3ae5dbc4eca940c3cded574d10a?pvs=4#ace48b76e4f140cf978f19a7b15167d6)  
+![](https://humorous-bass-b9e.notion.site/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Fd0e14a57-11be-4d73-8bef-05577aa782e5%2F%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2023-08-10_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2592%25E1%2585%25AE_3.11.46.png?table=block&id=ace48b76-e4f1-40cf-978f-19a7b15167d6&spaceId=e738b5df-6beb-459d-a4dd-ce360de05b7b&width=2000&userId=&cache=v2)    
 
 `Enum.java` 의 내용이다. 
 
@@ -122,7 +122,7 @@ public enum Direction {
 }
 ```
 
-![스크린샷 2023-08-10 오후 3.17.28.png](Enum%E1%84%80%E1%85%AA%20%E1%84%8B%E1%85%A2%E1%84%82%E1%85%A9%E1%84%90%E1%85%A6%E1%84%8B%E1%85%B5%E1%84%89%E1%85%A7%E1%86%AB%2002daa3ae5dbc4eca940c3cded574d10a/%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2023-08-10_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2592%25E1%2585%25AE_3.17.28.png)
+![](https://humorous-bass-b9e.notion.site/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Fdf1c8c93-bff1-4a2a-a019-c9fdcb97b278%2F%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2023-08-10_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2592%25E1%2585%25AE_3.17.28.png?table=block&id=4b9f986c-e961-44dd-b234-ed8933a6a587&spaceId=e738b5df-6beb-459d-a4dd-ce360de05b7b&width=2000&userId=&cache=v2)  
 
 ## 열거형에 멤버 추가하기
 
@@ -375,7 +375,7 @@ Enum의 생성자는 묵시적으로 `private`이고, `public static final 객�
 리플렉션 공격은 어떻게 막는걸까?
 > 
 
-![스크린샷 2023-08-11 오후 5.53.12.png](Enum%E1%84%80%E1%85%AA%20%E1%84%8B%E1%85%A2%E1%84%82%E1%85%A9%E1%84%90%E1%85%A6%E1%84%8B%E1%85%B5%E1%84%89%E1%85%A7%E1%86%AB%2002daa3ae5dbc4eca940c3cded574d10a/%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2023-08-11_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2592%25E1%2585%25AE_5.53.12.png)
+![](https://humorous-bass-b9e.notion.site/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F0ec13d04-2f6d-41dd-92ba-7b3cbe77d713%2F%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2023-08-11_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2592%25E1%2585%25AE_5.53.12.png?table=block&id=183b6bd7-3a1b-4426-8263-b793b1bd620e&spaceId=e738b5df-6beb-459d-a4dd-ce360de05b7b&width=2000&userId=&cache=v2)  
 
 `getDeclaredConstructor` 단계에서 기본 생성자를 찾을 수 없다며 `NoSuchMethodException`이 발생한다.
 
@@ -414,7 +414,7 @@ public class EnumTrouble {
 }
 ```
 
-![스크린샷 2023-08-11 오후 5.46.00.png](Enum%E1%84%80%E1%85%AA%20%E1%84%8B%E1%85%A2%E1%84%82%E1%85%A9%E1%84%90%E1%85%A6%E1%84%8B%E1%85%B5%E1%84%89%E1%85%A7%E1%86%AB%2002daa3ae5dbc4eca940c3cded574d10a/%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2023-08-11_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2592%25E1%2585%25AE_5.46.00.png)
+![](https://humorous-bass-b9e.notion.site/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F2ddb99d4-fdd6-4d25-bffe-626d5cdc04ff%2F%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2023-08-11_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2592%25E1%2585%25AE_5.46.00.png?table=block&id=9ebc12ba-041d-4823-8935-41c99511fbb1&spaceId=e738b5df-6beb-459d-a4dd-ce360de05b7b&width=2000&userId=&cache=v2)  
 
 15번 line은 `constructor.newInstance()`이다. 예외 메시지를 보면 ‘enum 객체를 리플렉션으로 생성할 수 없다’라고 적혀있다.
 
@@ -537,11 +537,11 @@ of() 메서드의 구현은 상당히 간단해보인다.
 
 재밌는 것은, 고정된 숫자의 요소(최대 열개까지)는 다양한 오버로드 버전으로 지원한다.
 
-![스크린샷 2023-08-11 오후 8.34.45.png](Enum%E1%84%80%E1%85%AA%20%E1%84%8B%E1%85%A2%E1%84%82%E1%85%A9%E1%84%90%E1%85%A6%E1%84%8B%E1%85%B5%E1%84%89%E1%85%A7%E1%86%AB%2002daa3ae5dbc4eca940c3cded574d10a/%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2023-08-11_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2592%25E1%2585%25AE_8.34.45.png)
+![](https://humorous-bass-b9e.notion.site/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Fe71c9139-2f74-4bee-8335-aadd16232c85%2F%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2023-08-11_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2592%25E1%2585%25AE_8.34.45.png?table=block&id=3f6106a6-c0e1-4bdd-9587-e9f7991d75c7&spaceId=e738b5df-6beb-459d-a4dd-ce360de05b7b&width=2000&userId=&cache=v2)
 
 아래 사진과 같이 다중 요소를 받을 수 있도록 자바 API가 있는데도, 
 
-![스크린샷 2023-08-11 오후 8.35.27.png](Enum%E1%84%80%E1%85%AA%20%E1%84%8B%E1%85%A2%E1%84%82%E1%85%A9%E1%84%90%E1%85%A6%E1%84%8B%E1%85%B5%E1%84%89%E1%85%A7%E1%86%AB%2002daa3ae5dbc4eca940c3cded574d10a/%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2023-08-11_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2592%25E1%2585%25AE_8.35.27.png)
+![](https://humorous-bass-b9e.notion.site/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Ff0d72253-394f-4515-a9a8-55be9f91c027%2F%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2023-08-11_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2592%25E1%2585%25AE_8.35.27.png?table=block&id=306c7e20-b082-408e-9189-0fc20a77d98e&spaceId=e738b5df-6beb-459d-a4dd-ce360de05b7b&width=2000&userId=&cache=v2)
 
 다양한 오버로드 버전을 제공한 이유는 뭘까?
 
@@ -585,7 +585,7 @@ RegularEnumSet은 비트 벡터를 표현하기 위해 `단일 long 자료형`�
 
 `EnumSet.java`의 `noneOf()` 메서드 중
 
-![스크린샷 2023-08-11 오후 9.04.11.png](Enum%E1%84%80%E1%85%AA%20%E1%84%8B%E1%85%A2%E1%84%82%E1%85%A9%E1%84%90%E1%85%A6%E1%84%8B%E1%85%B5%E1%84%89%E1%85%A7%E1%86%AB%2002daa3ae5dbc4eca940c3cded574d10a/%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2023-08-11_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2592%25E1%2585%25AE_9.04.11.png)
+![](https://humorous-bass-b9e.notion.site/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Fb0efbfaa-594f-4d3a-b49c-d6a652b2499a%2F%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2023-08-11_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%2592%25E1%2585%25AE_9.04.11.png?table=block&id=831dea50-179c-4c82-83b2-f7c0e82cabbe&spaceId=e738b5df-6beb-459d-a4dd-ce360de05b7b&width=2000&userId=&cache=v2)  
 
 ```java
 EnumSet<Color> colorSet = EnumSet.of(Color.RED, Color.YELLOW);
