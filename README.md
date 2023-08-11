@@ -23,8 +23,8 @@
 ### 일급 컬렉션
 - [일급 컬렉션](https://github.com/euichaan/TIL/tree/main/%EA%B0%9D%EC%B2%B4%EC%A7%80%ED%96%A5/first-class-collection)  
   
-### Enumeration
-- [Enumeration](https://github.com/euichaan/TIL/blob/main/%EA%B0%9D%EC%B2%B4%EC%A7%80%ED%96%A5/enum/REAEME.md)  
+### Enum
+- [Enum](https://github.com/euichaan/TIL/blob/main/%EA%B0%9D%EC%B2%B4%EC%A7%80%ED%96%A5/enum/REAEME.md)  
     
 ## Test
   

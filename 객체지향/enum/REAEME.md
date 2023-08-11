@@ -1,6 +1,5 @@
-# Enumeration
+# Enum
 ## Enum이란?
-- enumeration type = 열거형  
 - JDK 1.5부터 생겨난 기능으로 열거체를 정의할 수 있는 클래스  
 - 비교 시 실제 값 뿐만 아니라 타입까지 체크 가능  
 - 상수값이 재정의 되어도 다시 컴파일 할 필요 X  
@@ -49,8 +48,3 @@ EnumMap은 해시를 사용할 필요가 없으므로 충돌 가능성이 없다
 ## 2. key를 제한할 수 있다.
 Enum 타입 외에는 key로 만들 수 없다.  
 HashMap에 null을 넣을 수 있는 대신, EnumMap에는 Null을 넣으면 NullPointerException이 발생한다.  
-
-
-
-
-
