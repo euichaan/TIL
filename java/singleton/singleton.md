@@ -119,7 +119,7 @@ public class SerializeDemo implements Serializable {
 	}
 }
 ```
-위 코드의 결과는 다음과 같습니다.
+Output:  
 <img width="724" alt="스크린샷 2023-08-12 오후 1 23 31" src="https://github.com/euichaan/TIL/assets/98090620/0e14ce1d-1cc0-4ff9-b0c1-5002be730f9f">  
   
 여기서 singleton과 singleton2는 필드 변수로 두 개의 다른 값을 가진 두 개의 다른 인스턴스입니다.  
@@ -138,7 +138,7 @@ public class Singleton implements Serializable{
 
 }
 ```
-변경한 후 실행 결과는 다음과 같습니다.
+Output:  
 <img width="733" alt="스크린샷 2023-08-12 오후 1 28 45" src="https://github.com/euichaan/TIL/assets/98090620/4f555ecf-b9a8-4890-ab80-cbd263f04524">  
   
 이제 싱글톤 속성이 보존되고 JVM 내에 싱글톤 클래스의 인스턴스가 하나만 존재합니다.  
