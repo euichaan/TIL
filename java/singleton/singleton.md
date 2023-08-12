@@ -215,4 +215,4 @@ public class EnumDemo {
 여기서 한 가지 기억해야 할 점은 열거형을 직렬화할 때 **필드 변수는 직렬화되지 않는다는 것입니다.**  
 예를 들어 SingletonEnum 클래스를 직렬화했다가 역직렬화하면 int 값 필드의 값이 손실됩니다.  
 [Serialization of Enum Constants](https://docs.oracle.com/javase/6/docs/platform/serialization/spec/serial-arch.html#6469)  
-열거형 상수의 직렬화된 형식은 그 이름으로만 구성되며, `상수의 필드 값``은 형식에 존재하지 않습니다.  
+열거형 상수의 직렬화된 형식은 그 이름으로만 구성되며, `상수의 필드 값`은 형식에 존재하지 않습니다.  
