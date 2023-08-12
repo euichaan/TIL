@@ -10,6 +10,9 @@
 ### JIT  
 - [JIT compiler](https://github.com/euichaan/TIL/blob/main/java/jvm/jit-compiler.md)  
   
+### Singleton
+- [Singleton](https://github.com/euichaan/TIL/blob/main/java/singleton/singleton.md)  
+  
 ### Java8
 - [HashMap 성능 개선](https://github.com/euichaan/TIL/blob/main/java8/hashmap/hashmap-performance.md)  
 - [concurrentHashMap](https://github.com/euichaan/TIL/blob/main/java8/hashmap/concurrentHashMap.md)  
