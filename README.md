@@ -29,6 +29,9 @@
 ### Enum
 - [Enum](https://github.com/euichaan/TIL/blob/main/java/enum/enum.md)  
 - [Enum을 활용한 리팩터링 방법](https://github.com/euichaan/TIL/blob/main/java/enum/enum-refactoring.md)  
+  
+### Annotation
+- [Annotation](https://github.com/euichaan/TIL/blob/main/java/annotation/annotation.md)  
     
 ## Test
   
