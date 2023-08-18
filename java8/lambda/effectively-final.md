@@ -19,8 +19,8 @@ List<Person> personList = new ArrayList<>();
 personList.add(new Person(2));
 personList.add(new Person(3));
 for (Person p : personList) {
-	p.setId(2);
-	personList.removeIf(o -> o.getId() == p.getId());
+  p.setId(2);
+  personList.removeIf(o -> o.getId() == p.getId());
 }
 System.out.println(personList);
 ```
@@ -34,18 +34,18 @@ System.out.println(personList);
 public class LambdaCapturing {
 	
 	// 1. 외부 인스턴스 변수 참조 
-	private int count = 0;
+  private int count = 0;
 
-	public void someMethod() {
-		Runnable runnable = () -> System.out.println("count: " + count);
-	}
+  public void someMethod() {
+    Runnable runnable = () -> System.out.println("count: " + count);
+  }
 }
 
 // 2. 외부 지역 변수 참조
-	public void someMethod1() {
-		int count = 0;
-		Runnable runnable = () -> System.out.println("count: " + count);
-	}
+public void someMethod1() {
+  int count = 0;
+  Runnable runnable = () -> System.out.println("count: " + count);
+}
 ```
 이와 반대로 람다 내부에서 접근하는 외부 변수가 없는(Non-Capturing Lambda) 예제는 아래와 같다.  
 ```java
@@ -96,22 +96,22 @@ public void test() {
 ```java
 public class Tester {
 	
-	private int instanceVariable = 0;
-	private static int staticVariable = 0;
+  private int instanceVariable = 0;
+  private static int staticVariable = 0;
 
-	public void someMethodWithStaticVariable() {
-		staticVariable = 1;
-		Runnable runnable = () -> {
-			staticVariable++;
-		};
-	}
+  public void someMethodWithStaticVariable() {
+    staticVariable = 1;
+    Runnable runnable = () -> {
+      staticVariable++;
+    };
+  }
 	
-	public void someMethodWithInstanceVariable() {
-		instanceVariable = 1;
-		Runnable runnable = () -> {
-			instanceVariable++;
-		};
-	}
+  public void someMethodWithInstanceVariable() {
+    instanceVariable = 1;
+    Runnable runnable = () -> {
+      instanceVariable++;
+    };
+  }
 }
 ```
  
