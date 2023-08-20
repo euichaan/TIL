@@ -40,6 +40,8 @@ String result = stringList.get(0);
 ```
 타입 변환을 제거할 수 있다. List에 저장되는 요소를 String 타입으로 제한했기 때문에 캐스팅이 필요하지 않다.  
   
+  
+## 제네릭은 불공변(무공변, invariant)이다.
 `List<Object> objectList = new ArrayList<Integer>();` 는 가능할까?  
   
 불가능하다.  
@@ -57,11 +59,11 @@ List<Object> objectList = new ArrayList<Integer>(); //Compile Error!
 ## 변성(variance)
 타입 계층 관계에서 서로 다른 타입간에 어떤 관계가 있는지를 나타내는 개념  
   
-### 무공변(Invariance), 불공변
+### 1. 무공변(Invariance), 불공변
 타입 B가 타입 A의 하위 타입일 때, `T<B>`가 `T<A>`의 하위 타입이 아닌 경우. 즉, 아무런 관계가 없다.  
-### 공변(Covariance) - <? extends T>
+### 2. 공변(Covariance) - <? extends T>
 타입 B가 타입 A의 하위 타입일 때, `T<B>`가 `T<A>`의 하위 타입인 경우.  
-### 반공변(Contravariance) - <? super T>
+### 3. 반공변(Contravariance) - <? super T>
 타입 B가 타입 A의 하위 타입일 때, `T<B>`가 `T<A>`의 상위 타입인 경우.  
   
 ## 제네릭 타입(Generic Types)
