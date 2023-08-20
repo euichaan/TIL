@@ -13,8 +13,8 @@
 ### Singleton
 - [Singleton](https://github.com/euichaan/TIL/blob/main/java/singleton/singleton.md)  
   
-### Generic
-- [Generic](https://github.com/euichaan/TIL/blob/82efab29c4b52d436392ff05b0b37ad6fc73d77a/java/generic/generic.md)  
+### 제네릭
+- [제네릭](https://github.com/euichaan/TIL/blob/82efab29c4b52d436392ff05b0b37ad6fc73d77a/java/generic/generic.md)  
   
 ### Java8
 - [HashMap 성능 개선](https://github.com/euichaan/TIL/blob/main/java8/hashmap/hashmap-performance.md)  
