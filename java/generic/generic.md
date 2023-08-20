@@ -283,7 +283,7 @@ class AnotherChild extends MyParent {
 
 }
 ```
-<? extends MyParent> 타입으로는 MyChild와 AnotherChild (또는 그 외의 타입)이 될 수도 있다. 컬렉션 c에서 꺼내서 만들어지는 객체(produce)가 반드시 MyChild 타입이 아닌 AnotherChild가 될 수도 있다. 그렇기 때문에 MyChild 타입으로 꺼내려고 시도하면 컴파일 에러가 발생한다. **하지만 적어도 MyParent 임은 확실하므로 MyParent와 그 부모 타입으로 꺼내는 것은 문제가 없다.**  
+`<? extends MyParent>` 타입으로는 MyChild와 AnotherChild (또는 그 외의 타입)이 될 수도 있다. 컬렉션 c에서 꺼내서 만들어지는 객체(produce)가 반드시 MyChild 타입이 아닌 AnotherChild가 될 수도 있다. 그렇기 때문에 MyChild 타입으로 꺼내려고 시도하면 컴파일 에러가 발생한다. **하지만 적어도 MyParent 임은 확실하므로 MyParent와 그 부모 타입으로 꺼내는 것은 문제가 없다.**  
   
 갖고 있는 원소를 사용 또는 소모(consume)하여 컬렉션에 추가하는 경우에는 상황이 달라진다. 다음과 같이 원소를 추가하는 코드는 모든 타입에 대해 컴파일 에러가 발생한다.  
 ```java
