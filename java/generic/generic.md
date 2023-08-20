@@ -18,7 +18,7 @@ String result = (String) stringList.get(0) + (String) stringList.get(1); // Clas
 실행을 시켜 꺼낼 때 String 타입으로 캐스팅 할 시 `ClassCastException`(언체크 예외, 런타임 예외)가 발생한다.  
   
 **제네릭 사용**  
-<img width="416" alt="스크린샷 2023-08-20 오후 12 49 24" src="https://github.com/euichaan/TIL/assets/98090620/1c8e3d24-57ee-40b7-bb46-443a0dd6a547">
+<img width="416" alt="스크린샷 2023-08-20 오후 12 49 24" src="https://github.com/euichaan/TIL/assets/98090620/1c8e3d24-57ee-40b7-bb46-443a0dd6a547">  
   
 List의 타입 매개변수를 String으로 지정하면 String 타입을 넣어야 한다는 것을 컴파일러가 알게 된다.  
   
