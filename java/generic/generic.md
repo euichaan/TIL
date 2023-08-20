@@ -40,7 +40,7 @@ String result = stringList.get(0);
 ```
 타입 변환을 제거할 수 있다. List에 저장되는 요소를 String 타입으로 제한했기 때문에 캐스팅이 필요하지 않다.  
   
-## List<Object> objectList = new ArrayList<Integer>(); 
+`List<Object> objectList = new ArrayList<Integer>();` 는 가능할까?  
   
 불가능하다.  
 ```java
@@ -52,7 +52,7 @@ List<Object> objectList = new ArrayList<Integer>(); //Compile Error!
 반면에 제네릭에서는 Integer가 Object의 하위 타입이더라도 List<Object>와 ArrayList<Integer>는 아무런 관계가 없다.  
 따라서 둘은 서로 다른 타입 매개변수이기 때문에 컴파일 오류를 발생시킨다.  
   
-배열과 같은 특징을 공변, 제네릭과 같은 특징을 무공변이라 한다.  
+배열과 같은 특징을 공변, 제네릭과 같은 특징을 무공변(불공변)이라 한다.  
   
 ## 변성(variance)
 타입 계층 관계에서 서로 다른 타입간에 어떤 관계가 있는지를 나타내는 개념  
@@ -67,8 +67,7 @@ List<Object> objectList = new ArrayList<Integer>(); //Compile Error!
 ## 제네릭 타입(Generic Types)
 타입을 파라미터로 가지는 클래스와 인터페이스  
 ```java
-// 비제네릭
-public class Category {
+public class Category { // 비제네릭 
 	
 	private Object object;
 	
@@ -83,8 +82,7 @@ public class Category {
 ```
 
 ```java
-//제네릭
-public class Category<T> {
+public class Category<T> { // 제네릭 
 
 	private T t;
 	
