@@ -19,6 +19,7 @@ String result = (String) stringList.get(0) + (String) stringList.get(1); // Clas
   
 **제네릭 사용**  
 <img width="416" alt="스크린샷 2023-08-20 오후 12 49 24" src="https://github.com/euichaan/TIL/assets/98090620/1c8e3d24-57ee-40b7-bb46-443a0dd6a547">
+  
 List의 타입 매개변수를 String으로 지정하면 String 타입을 넣어야 한다는 것을 컴파일러가 알게 된다.  
   
 ### 2. 캐스팅(타입 변환 제거)
