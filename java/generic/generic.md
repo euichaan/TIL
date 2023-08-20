@@ -8,7 +8,7 @@ List<String> stringList = new ArrayList<String>(); // 매개변수화 된 타입
   
 ## 제네릭은 왜 사용할까?
 ### 1. 컴파일 타임에 강력한 타입 검사
-**제네릭 미사용**  
+`제네릭 미사용`  
 ```java
 List stringList = new ArrayList();
 stringList.add("javalivestudy");
@@ -17,13 +17,13 @@ String result = (String) stringList.get(0) + (String) stringList.get(1); // Clas
 ```
 실행을 시켜 꺼낼 때 String 타입으로 캐스팅 할 시 `ClassCastException`(언체크 예외, 런타임 예외)가 발생한다.  
   
-**제네릭 사용**  
+`제네릭 사용`  
 <img width="416" alt="스크린샷 2023-08-20 오후 12 49 24" src="https://github.com/euichaan/TIL/assets/98090620/1c8e3d24-57ee-40b7-bb46-443a0dd6a547">  
   
 List의 타입 매개변수를 String으로 지정하면 String 타입을 넣어야 한다는 것을 컴파일러가 알게 된다.  
   
 ### 2. 캐스팅(타입 변환 제거)
-**제네릭 미사용**  
+`제네릭 미사용`  
 ```java
 List stringList = new ArrayList();
 stringList.add("javalivestudy");
@@ -32,7 +32,7 @@ String result = (String) stringList.get(0);
 제네릭이 없는 경우에는 리스트에 어떤 타입이 들어있는지 모르기 때문에 꺼낼 때 캐스팅이 필요하다.  
 매번 타입 변환을 하면 프로그램 성능에 안좋은 영향을 끼칠 수 있다.  
   
-**제네릭 사용**
+`제네릭 사용`  
 ```java
 List<String> stringList = new ArrayList<>();
 stringList.add("javalivestudy");
