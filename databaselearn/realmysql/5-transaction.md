@@ -370,6 +370,8 @@ REPEATABLE READ 격리 수준에서도 다음과 같은 부정합이 발생할 �
 ![](https://github.com/euichaan/TIL/blob/main/img/REPEATABLE%20READ%202.png)  
 참고로, SELECT ... FOR UPDATE는 SELECT 쿼리가 읽은 레코드에 대해서 쓰기 잠금을 건다.  
   
+하지만 위의 예제는 실행되지 않는다. 그 이유는.. FOR UPDATE 시 쓰기 잠금을 걸기 때문이다.  
+  
 한 트랜잭션 내에서 두 번의 SELECT ... FOR UPDATE 쿼리 결과는 서로 다르다. **이렇게 다른 트랜잭션에서 수행한 변경 작업에 의해 레코드가 보였다 안 보였다 하는 현상을 PHANTOM READ(또는 PHANTOM ROW)** 라고 한다. SELECT ... FOR UPDATE 쿼리는 SELECT하는 레코드에 쓰기 잠금을 걸어야 하는데, 언두 레코드에는 잠금을 걸 수 없다. 그래서 SELECT ... FOR UPDATE 나 SELECT ... LOOCK IN SHARE MODE로 조회되는 레코드는 언두 영역의 변경 전 데이터를 가져오는 것이 아니라 현재 레코드의 값을 가져오게 되는 것이다.  
 ## 4.4 SERIALIZABLE
 가장 단순한 격리 수준이면서 동시에 가장 엄격한 격리 수준이다. 그만큼 동시 처리 성능도 다른 트랜잭션 격리 수준보다 떨어진다. InnoDB 테이블에서 기본적으로 순수한 SELECT 작업은 아무런 레코드 잠금도 설정하지 않고 실행된다. (Non-locking consistent read)라는 말이 이를 의미하는 것이다. 하지만 트랜잭션의 격리 수준이 SERIALIZABLE로 설정되면 읽기 작업도 공유 잠금(읽기 잠금)을 획득해야만 하며, 동시에 다른 트랜잭션은 그러한 레코드를 변경하지 못하게 된다. 즉, 한 트랜잭션에서 읽고 쓰는 레코드를 다른 트랜잭션에서는 절대 접근할 수 없는 것이다.  
