@@ -13,18 +13,8 @@
 - 초기화를 진행한 후에 다시 할당하지 않았다.  
 - 전위(prefix) 또는 후위(postfix)에 증감 또는 감소 연산자가 사용되지 않았다.  
   
-객체의 경우에는 객체가 가리키는 참조를 변경하지 않으면 된다. 따라서 아래와 같이 객체의 상태를 변경하더라도 effectively final이다.  
-```java
-List<Person> personList = new ArrayList<>();
-personList.add(new Person(2));
-personList.add(new Person(3));
-for (Person p : personList) {
-  p.setId(2);
-  personList.removeIf(o -> o.getId() == p.getId());
-}
-System.out.println(personList);
-```
-  
+객체의 경우에는 객체가 가리키는 참조를 변경하지 않으면 된다.    
+    
 ## Lambda Capturing
 람다에서는 외부에 정의된 변수를 사용할 때 내부에서 사용할 수 있도록 복사본을 생성한다.  
 이를 **람다 캡처링(Lambda Capturing)**이라고 하는데 여기서 **외부 변수는 지역 변수를 비롯하여 인스턴스 변수와 클래스 변수를 포함한다**  
