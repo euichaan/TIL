@@ -920,7 +920,7 @@ AOP에서 공통 기능을 Aspect라고 하는데 Aspect 외에 알아두어야 
 ### 2.2 Advice의 종류
 Advice(언제 공통 기능을 핵심 로직에 적용할지. 예를 들어 '메서드 호출하기 전')  
 스프링은 프록시를 이용해서 메서드 호출 시점에 Aspect를 적용하기 때문에 구현 가능한 Advice의 종류는 다음과 같다.(Before Advice, After Returning Advice, After Throwing Advice, After Advice, Around Advice)  
-이 중 가장 널리 사용되는 것은 Around Advice이다. 이유는 대상 객체으 메서드를 실행하기 전/후, 익셉션 발생 시점 등 다양한 시점에 원하는 기능을 삽입할 수 있기 때문이다.  
+이 중 가장 널리 사용되는 것은 Around Advice이다. 이유는 대상 객체의 메서드를 실행하기 전/후, 익셉션 발생 시점 등 다양한 시점에 원하는 기능을 삽입할 수 있기 때문이다.  
 `캐시 기능, 성능 모니터링 기능`과 같은 Aspect를 구현할 때에는 Around Advice를 주로 이용한다. 이 책에서도 Around Advice의 구현 방법에 대해서만 살펴볼 것이다.  
 ```
 Around Advice: 대상 객체의 메서드 실행 전, 후 또는 익셉션 발생 시점에 공통 기능을 실행하는데 사용된다.
@@ -1027,3 +1027,103 @@ com.sun.proxy.$Proxy19
 ```
 이 출력 결과를 보면 Calculator 타입이 RecCalculator 클래스가 아니고 $Proxy17이다. 이 타입은 스프링이 생성한 프록시 타입이다.  
 AOP를 적용하지 않았으면 리턴한 객체는 프록시 객체가 아닌 RecCalculator 타입이었을 것이다.  
+  
+### 3.2 ProceedingJoinPoint의 메서드
+Around Advice에서 사용할 공통 기능 메서드는 대부분 파라미터로 전달받은 ProceedingJoinPoint의 proceed() 메서드만 호출하면 된다.  
+```java
+@Around("publicTarget()")
+	public Object measure(ProceedingJoinPoint joinPoint) throws Throwable {
+		long start = System.nanoTime();
+		try {
+			Object result = joinPoint.proceed();
+			return result;
+			...
+```
+물론 호출되는 대상 객체에 대한 정보, 실행되는 메서드에 대한 정보, 메서드를 호출할 때 전달된 인자에 대한 정보가 필요할 때가 있다.  
+이들 정보에 접근할 수 있도록 ProceedingJoinPoint 인터페이스는 다음 메서드를 제공한다.  
+- Signature getSignature(): 호출되는 메서드에 대한 정보를 구한다.  
+- Object getTarget(): 대상 객체를 구한다.  
+- Object[] getArgs(): 파라미터 목록을 구한다.  
+  
+org.aspectj.lang.Signature 인터페이스는 다음 메서드를 제공한다. 각 메서드는 호출되는 메서드의 정보를 제공한다.  
+- String getName(): 호출되는 메서드의 이름을 구한다.  
+- String toLongString(): 호출되는 메서드를 완전하게 표현한 문장을 구한다(메서드의 리턴 타입, 파라미터 타입이 모두 표시된다).  
+- String toShortString(): 호출되는 메서드를 축약해서 표현한 문장을 구한다(기본 구현은 메서드의 이름만을 구한다).  
+  
+## 4. 프록시 생성 방식
+```java
+RecCalculator cal = ctx.getBean("calculator", RecCalculator.class);
+```
+다음과 같이 변경하면 익셉션이 발생한다.  
+```
+Bean named 'calculator' is expected to be of type 'me.euichan.aop.RecCalculator' but was actually of type 'com.sun.proxy.$Proxy17'
+```
+익셉션 메세지를 보면 getBean() 메서드에 사용한 타입이 RecCalculator인데 반해 실제 타입은 $Proxy17이라는 메시지가 나온다.  
+$Proxy17은 스프링이 런타임에 생성한 프록시 객체의 클래스 이름이다. $Proxy17 클래스는 RecCalculator 클래스가 상속받은 Calculator 인터페이스를 상속받게 된다.  
+  
+스프링은 AOP를 위한 프록시 객체를 생성할 때 **실제 생성할 빈 객체가 인터페이스를 상속하면 인터페이스를 이용해서 프록시를 생성한다.**  
+따라서 실제 빈의 타입이 RecCalculator이라고 하더라도 "calculator"이름에 해당하는 빈 객체의 타입은 Calculator 인터페이스를 상속받은 프록시 타입이 된다.  
+```java
+// 설정 클래스
+// AOP 적용시 RecCalculator 가 상속받은 Calculator 인터페이스를 이용해서 프록시 생성
+@Bean
+public Calculator calculator() {
+	return new RecCalculator();
+}
+
+// 자바 코드
+// "calculator" 빈의 실제 타입은 Calculator를 상속한 프록시 타입이므로
+// RecCalculator로 타입 변환을 할 수 없기 때문에 익셉션 발생
+RecCalculator cal = ctx.getBean("calculator", RecCalculator.class);
+```  
+빈 객체가 인터페이스를 상속할 때 인터페이스가 아닌 클래스를 이용해서 프록시를 생성하고 싶다면 다음과 같이 설정한다.  
+```java
+@Configuration
+@EnableAspectJAutoProxy(proxyTargetClass = true)
+public class AppCtx {
+```
+인터페이스가 아닌 자바 클래스를 상속받아 프록시를 생성한다. 실제 RecCalculator를 상속받는다.  
+  
+### 4.2 Advice 적용 순서
+```java
+public class MainAspectWithCache {
+
+	public static void main(String[] args) {
+		final AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(
+			AppCtxWithCache.class);
+		final Calculator calculator = ac.getBean("calculator", Calculator.class); 
+		calculator.factorial(7); // CacheAspect 실행 -> ExeTimeAspect 실행 -> 대상 객체 실행 
+		calculator.factorial(7);
+		calculator.factorial(5);
+		calculator.factorial(5);
+		ac.close();
+	}
+}
+```
+어떤 Aspect가 먼저 적용될지는 스프링 프레임워크나 자바 버전에 따라 달라질 수 있기 때문에 적용 순서가 중요하다면 직접 순서를 지정해야 한다.  
+이럴 때 사용하는 것이 @Order 애노테이션이다.  
+@Order 애노테이션의 값이 작으면 먼저 적용하고 크면 나중에 적용한다.  
+  
+### 4.3 @Around의 Pointcut 설정과 @Pointcut 재사용
+여러 Aspect에서 공통으로 사용하는 Pointcut이 있다면 다음과 같이 별도 클래스에 Pointcut을 정의하고, 각 Aspect 클래스에서 해당 Pointcut을 사용하도록 구성하면  
+Pointcut 관리가 편해진다.  
+```java
+public class CommonPointcut {
+
+	@Pointcut("execution(public * me.euichan.aop..*(..))")
+	public void commonTarget() {
+
+	}
+}
+...
+
+@Aspect
+@Order(2)
+public class CacheAspect {
+
+	private Map<Long, Object> cache = new HashMap<>();
+
+	@Around("CommonPointcut.commonTarget()") // 같은 패키지에 위치하므로 패키지 이름이 없는 간단한 클래스 이름으로 설정할 수 있다.
+	public Object execute(...)
+```
+CommonPointcut은 빈으로 등록할 필요가 없다. @Around 애노테이션에서 해당 클래스에 접근 가능하면 해당 Pointcut을 사용할 수 있다.  
