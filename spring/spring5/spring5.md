@@ -1157,3 +1157,94 @@ CommonPointcut은 빈으로 등록할 필요가 없다. @Around 애노테이션�
 DB 커넥션 풀 기능을 제공하는 모듈로는 Tomcat JDBC, HikariCP, DBCP, c3p0 등이 존재한다.  
   
 ## 3. DataSource 설정 
+JDBC API는 DriverManager 외에 DataSource를 이용해서 DB 연결을 구하는 방법을 정의하고 있다. DataSource를 사용하면 다음 방식으로 Connection을 구할 수 있다.  
+```java
+Connection conn = null;
+try {
+	conn = dataSource.getConnection();
+	...
+}
+```
+**스프링이 제공하는 DB 연동 기능은 DataSource를 사용해서 DB Connection을 구한다.**    
+DB 연동에 사용할 DataSource를 스프링 빈으로 등록하고 DB 연동 기능을 구현한 빈 객체는 DataSource를 주입받아 사용한다.  
+  
+Tomcat JDBC 모듈은 javax.sql.DataSource를 구현한 DataSource 클래스를 제공한다. (org.apache.tomcat.jdbc.pool.DataSource 가 javax.sql.DataSource 를 구현한 클래스이다)  
+이 클래스를 스프링 빈으로 등록해서 DataSource로 사용할 수 있다.  
+```java
+@Configuration
+public class AppCtx {
+
+	@Bean(destroyMethod = "close")
+	public DataSource dataSource() {
+		//org.apache.tomcat.jdbc.pool.DataSource 가 javax.sql.DataSource 를 구현한 형태
+		DataSource dataSource = new DataSource();
+		dataSource.setDriverClassName("com.mysql.jdbc.Driver");
+		dataSource.setUrl("jdbc:mysql://localhost/spring5fs?characterEncoding=utf8");
+		dataSource.setUsername("root");
+		dataSource.setPassword("a87524626");
+		dataSource.setInitialSize(2);
+		dataSource.setMaxActive(10);
+		return dataSource;
+	}
+}
+```
+### 3.1 Tomcat JDBC의 주요 프로퍼티
+Tomcat JDBC 모듈의 org.apache.tomcat.jdbc.pool.DataSource 클래스는 커넥션 풀 기능을 제공하는 DataSource(javax.sql.DataSource) 구현 클래스이다.  
+DataSource 클래스는 커넥션을 몇 개 만들지 지정할 수 있는 메서드를 제공한다.  
+- setInitialSize(int): 커넥션 풀을 초기화할 때 생성할 초기 커넥션 개수를 지정한다. 기본값은 10이다.  
+- setMaxActive(int): 커넥션 풀에서 가져올 수 있는 최대 커넥션 개수를 지정한다. 기본값은 100이다.  
+...  
+  
+커넥션 풀은 커넥션을 생성하고 유지한다. 커넥션 풀에 커넥션을 요청하면 해당 커넥션은 활성(active) 상태가 되고, 커넥션을 다시 반환하면 유휴(idle) 상태가 된다.  
+DataSource#getConnection()을 실행하면 커넥션 풀에서 커넥션을 가져와 커넥션이 활성 상태가 된다. 반대로 커넥션을 종료(close)하면 커넥션은 풀로 돌아가 유휴 상태가 된다.  
+```java
+public class DbQuery {
+	
+	private DataSource dataSource;
+
+	public DbQuery(final DataSource dataSource) {
+		this.dataSource = dataSource;
+	}
+	
+	public int count() {
+		Connection conn = null;
+		try {
+			conn = dataSource.getConnection(); // 풀에서 구함
+			try (Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery("select count(*) from MEMBER")) {
+				rs.next();
+				return rs.getInt(1);
+			}
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		} finally {
+			if (conn != null) {
+				try {
+					conn.close(); // 풀에 반환 
+				} catch (SQLException e) {
+					
+				}
+			}
+		}
+	}
+}
+```
+getConnection 을 실행하면 DataSource에서 커넥션을 구하는데 이 때 풀에서 커넥션을 가져온다.  
+이 시점에서 커넥션 conn은 활성 상태이다. 커넥션 사용이 끝나고 커넥션을 종료하면 **실제 커넥션을 끊지 않고  풀에 반환한다.** 풀에 반환된 커넥션은 다시 유휴 상태가 된다.  
+  
+maxActive는 활성 상태가 가능한 최대 커넥션 개수를 지정한다. maxActive를 40으로 지정하면 이는 동시에 커넥션 풀에서 가져올 수 있는 커넥션 개수가 40개라는 뜻이다.  
+활성 상태 커넥션이 40개인데 커넥션 풀에 다시 커넥션을 요청하면 다른 커넥션이 반환될 때까지 대기한다. 이 대기 시간이 maxWait이다.  
+대기 시간 내에 풀에 반환된 커넥션이 있으면 해당 커넥션을 구하게 되고, 대기 시간 내에 반환된 커넥션이 없으면 익셉션이 발생한다.  
+  
+커넥션 풀을 사용하는 이유는 성능 때문이다. 매번 새로운 커넥션을 생성하면 그때마다 연결 시간이 소모된다. 커넥션 풀을 사용하면 미리 커넥션을 생성했다가 필요할 때 커넥션을 꺼내 쓰므로 커넧션을 구하는 시간이 줄어 전체 응답 시간도 짧아진다. 그래서 커넥션 풀을 초기화할 때 최소 수준의 커넥션을 미리 생성하는 것이 좋다. 이때 생성할 커넥션 개수를 initialSize로 지정한다.  
+  
+커넥션 풀에 생성된 커넥션은 지속적으로 재사용된다. 그런데 한 커넥션이 영원히 유지되는 것은 아니다. DBMS 설정에 따라 일정 시간 내에 쿼리를 실행하지 않으면 연결을 끊기도 한다.  
+예를 들어 DBMS에 5분 동안 쿼리를 실행하지 않으면 DB 연결을 끊도록 설정했는데, 커넥션 풀에 특정 커넥션이 5분 넘게 유휴 상태로 존재했다고 하자. 이 경우 DBMS는 해당 커넥션의 연결을 끊지만 커넥션은 여전히 풀 속에 남아 있다. 이 상태에서 해당 커넥션을 가져와 사용하면 연결이 끊어진 커넥션이므로 익셉션이 발생하게 된다.  
+  
+이런 문제를 방지하려면 커넥션 풀의 커넥션이 유효한지 주기적으로 검사해야 한다.  
+예를 들어 10초 주기로 유휴 커넥션이 유효한지 여부를 검사하고 최소 유휴 시간을 3분으로 지정하고 싶다면 다음 설정을 사용한다.  
+```java
+dataSource.setTestWhileIdle(true); // 유휴 커넥션 검사
+dataSource.setMinEvictableIdleTimeMillis(1000 * 60 * 3); // 최소 유휴 시간 3분
+dataSource.setTimeBetweenEvictionRunsMillis(1000 * 10); // 10초 주기
+```
