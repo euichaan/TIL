@@ -1248,3 +1248,245 @@ dataSource.setTestWhileIdle(true); // 유휴 커넥션 검사
 dataSource.setMinEvictableIdleTimeMillis(1000 * 60 * 3); // 최소 유휴 시간 3분
 dataSource.setTimeBetweenEvictionRunsMillis(1000 * 10); // 10초 주기
 ```
+  
+## 4. JdbcTemplate을 이용한 쿼리 실행 
+스프링을 사용하면 DataSource나 Connection, Statement, ResultSet을 직접 사용하지 않고 JdbcTemplate을 이용해서 편리하게 쿼리를 실행할 수 있다.  
+  
+### 4.1 JdbcTemplate 생성하기
+가장 먼저 해야 할 작업은 JdbcTemplate 객체를 생성하는 것이다.  
+```java
+public class MemberDao {
+
+	private JdbcTemplate jdbcTemplate;
+
+	public MemberDao(DataSource dataSource) {
+		jdbcTemplate = new JdbcTemplate(dataSource);
+	}
+...
+```
+JdbcTemplate 객체를 생성하려면 위의 코드와 같이 DataSource를 생성자에 전달하면 된다.  
+JdbcTemplate을 생성하는 코드를 MemberDao 클래스에 추가했으니 스프링 설정에 MemberDao 빈 설정을 추가한다.  
+```java
+@Bean
+	public MemberDao memberDao() {
+		return new MemberDao(dataSource());
+	}
+```
+### 4.2 JdbcTemplate을 이용한 조회 쿼리 실행
+JdbcTemplate 클래스는 SELECT 쿼리 실행을 위한 query() 메서드를 제공한다.  
+  
+query 메서드는 sql 파라미터로 전달받은 쿼리를 실행하고 RowMapper를 이용해서 ResultSet의 결과를 자바 객체로 변환한다.  
+쿼리 실행 결과를 자바 객체로 변환할 때 사용하는 RowMapper 인터페이스는 다음과 같다.  
+```java
+package org.springframework.jdbc.core;
+
+public interface RowMapper<T> {
+	T mapRow(ResultSet rs, int rowNum) throws SQLException;
+}
+```
+RowMapper의 mapRow() 메서드는 SQL 실행 결과로 구한 ResultSet에서 한 행의 데이터를 읽어와 자바 객체로 변환하는 매퍼 기능을 구현한다.  
+sql 파라미터가 아래와 같이 인덱스 기반 파라미터(?)를 가진 쿼리이면 args 파라미터를 이용해서 각 인덱스 파라미터의 값을 지정한다.  
+```SQL
+select * from member where email = ? 
+```
+다음과 같이 selectByEmail 메서드를 구할 수 있다.  
+```java
+	public Member selectByEmail(String email) {
+		List<Member> results = jdbcTemplate.query(
+			"select * from MEMBER where EMAIL = ?",
+			new RowMapper<Member>() {
+				@Override
+				public Member mapRow(final ResultSet rs, final int rowNum) throws SQLException {
+					Member member = new Member(
+						rs.getString("EMAIL"),
+						rs.getString("PASSWORD"),
+						rs.getString("NAME"),
+						rs.getTimestamp("REGDATE").toLocalDateTime());
+					member.setId(rs.getLong("ID"));
+					return member;
+				}
+			}, email);
+		return results.isEmpty() ? null : results.get(0);
+	}
+```
+RowMapper는 ResultSet에서 데이터를 읽어와 Member 객체로 변환해주는 기능을 제공하므로 RowMapper의 타입 파라미터로 Member를 사용했다.  
+RowMapper<Member> 타입. 람다를 사용하면 익명 클래스를 사용하는 것보다 간결하다.  
+```java
+public Member selectByEmail(String email) {
+		// RowMapper는 ResultSet에서 데이터를 읽어와 Member 객체로 변환한다.
+		List<Member> results = jdbcTemplate.query(
+			"select * from MEMBER where EMAIL = ?",
+			(rs, rowNum) -> {
+				Member member = new Member(
+					rs.getString("EMAIL"),
+					rs.getString("PASSWORD"),
+					rs.getString("NAME"),
+					rs.getTimestamp("REGDATE").toLocalDateTime());
+				member.setId(rs.getLong("ID"));
+				return member;
+			}, email);
+		return results.isEmpty() ? null : results.get(0);
+	}
+```
+query() 메서드는 쿼리를 실행한 결과가 존재하지 않으면 **길이가 0인 List를 리턴하므로** List가 비어 있는지 여부로 결과가 존재하지 않는지 확인할 수 있다.  
+다음과 같이 selectAll() 메서드를 구현할 수 있다.  
+```java
+public List<Member> selectAll() {
+		return jdbcTemplate.query("select * from MEMBER",
+			(rs, rowNum) -> {
+				Member member = new Member(
+					rs.getString("EMAIL"),
+					rs.getString("PASSWORD"),
+					rs.getString("NAME"),
+					rs.getTimestamp("REGDATE").toLocalDateTime());
+				member.setId(rs.getLong("ID"));
+				return member;
+			});
+	}
+```
+### 4.3 결과가 1행인 경우 사용할 수 있는 queryForObject() 메서드
+count(*) 쿼리는 결과가 한 행 뿐이니 쿼리 결과를 Integer와 같은 정수 타입으로 받으면 편리할 것이다. 이를 위한 메서드가 바로 QueryForObject()이다.  
+```java
+public int count() {
+		return jdbcTemplate.queryForObject(
+			"select count(*) from MEMBER", Integer.class);
+	}
+```
+실행 결과 칼럼이 두 개 이상이면 RowMapper를 파라미터로 전달해서 결과를 생성할 수 있다.  
+  
+queryForObject() 메서드를 사용하려면 쿼리 실행 결과는 반드시 한 행이어야 한다.  
+결과 행이 정확히 한 개가 아니면 queryForObject() 대신 query() 메서드를 사용해야 한다.  
+  
+### 4.4 JdbcTemplate을 이용한 변경 쿼리 실행
+INSERT, UPDATE, DELETE 쿼리는 update() 메서드를 사용한다.  
+update() 메서드는 쿼리 실행 결과로 변경된 행의 개수를 리턴한다.  
+```java
+public void update(Member member) {
+		jdbcTemplate.update(
+			"update MEMBER set NAME = ?, PASSWORD = ? where EMAIL = ?",
+			member.getName(), member.getPassword(), member.getEmail());
+	}
+```
+### 4.5 PreparedStatementCreator를 이용한 쿼리 실행
+PreparedStatement의 set 메서드를 사용해서 직접 인덱스 파라미터의 값을 설정해야 할 때도 있다. 이 경우 PreparedStatementCreator를 인자로 받는 메서드를 이용해서 직접 PreparedStatement를 생성하고 설정해야 한다.  
+```java
+@FunctionalInterface
+public interface PreparedStatementCreator {
+	PreparedStatement createPreparedStatement(Connection con) throws SQLException;
+}
+```
+### 4.6 INSERT 쿼리 실행 시 KeyHolder를 이용해서 자동 생성 키값 구하기
+AUTO_INCREMENT와 같은 자동 증가 칼럼을 가진 테이블에 값을 삽입하면 해당 칼럼의 값이 자동으로 생성된다.  
+따라서 아래 코드처럼 INSERT 쿼리에 자동 증가 칼럼에 해당하는 값은 지정하지 않는다.  
+```java
+jdbcTemplate.update(
+	"insert into MEMBER (EMAIL, PASSWORD, NAME, REGDATE) values(?,?,?,?)",
+	member.getEamil(), ...
+);
+```
+그런데 쿼리 실행 후에 생성된 키값을 알고 싶다면 어떻게 할까? update 메서드는 변경된 행의 개수를 리턴할 뿐 생성된 키값을 리턴하지는 않는다.  
+  
+**JdbcTemplate은 자동으로 생성된 키값을 구할 수 있는 방법을 제공하고 있다. 그것은 바로 KeyHolder를 사용하는 것이다.**  
+KeyHolder를 사용하면 insert() 메서드에서 삽입하는 Member 객체의 ID값을 구할 수 있다.  
+```java
+	public void insert(Member member) {
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		jdbcTemplate.update(con -> {
+			PreparedStatement pstmt = con.prepareStatement(
+				"insert into MEMBER (EMAIL, PASSWORD, NAME, REGDATE)" + "values (?, ?, ?, ?)", new String[] {"ID"});
+			pstmt.setString(1, member.getEmail());
+			pstmt.setString(2, member.getPassword());
+			pstmt.setString(3, member.getName());
+			pstmt.setTimestamp(4, Timestamp.valueOf(member.getRegisterDateTime()));
+			return pstmt;
+		}, keyHolder);
+		Number keyValue = keyHolder.getKey();
+		member.setId(keyValue.longValue());
+	}
+```
+update() 메서드는 PreparedStatementCreator 객체와 KeyHolder 객체를 파라미터로 갖는다.  
+PreparedStatementCreator 를 이용해서 PreparedStatement를 직접 생성한다. 두 번째 파라미터로 String 배열인 ID를 주었다.  
+이 두 번째 파라미터는 자동 생성되는 키 칼럼 목록을 지정할 때 사용한다.  
+  
+KeyHolder에 보관된 키값은 getKey() 메서드를 이용해 구할 수 있다.  
+  
+## 5. MemberDao 테스트하기
+```java
+public class MainForMemberDao {
+
+	private static MemberDao memberDao;
+	private static DateTimeFormatter formatter;
+
+	public static void main(String[] args) {
+		AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(AppCtx.class);
+		memberDao = ac.getBean(MemberDao.class);
+		formatter = DateTimeFormatter.ofPattern("MMddHHmmss");
+
+		selectAll();
+		updateMember();
+		insertMember();
+
+		ac.close();
+	}
+
+	private static void selectAll() {
+		System.out.println("----- selectAll");
+		final int total = memberDao.count();
+		System.out.println("전체 데이터: = " + total);
+		final List<Member> members = memberDao.selectAll();
+		members.stream()
+			.map(member -> member.getId() + ":" + member.getEmail() + ":" + member.getName())
+			.forEach(System.out::println);
+	}
+
+	private static void updateMember() {
+		System.out.println("----- updateMember");
+		Member member = memberDao.selectByEmail("madvirus@madvirus.net");
+		String oldPassword = member.getPassword();
+		String newPassword = Double.toHexString(Math.random());
+		member.changePassword(oldPassword, newPassword);
+
+		memberDao.update(member);
+		System.out.println("암호 변경: " + oldPassword + " > " + newPassword);
+	}
+
+	private static void insertMember() {
+		System.out.println("----- insertMember");
+
+		String prefix = formatter.format(LocalDateTime.now());
+		final Member member = new Member(prefix + "@test.com", prefix, prefix, LocalDateTime.now());
+		memberDao.insert(member);
+		System.out.println(member.getId() + " 데이터 추가");
+	}
+}
+```
+잘못된 쿼리를 사용하는 것이 주요 에러 원인이다. 예를 들어 다음 코드는 개발자들이 자주 하는 실수를 보여준다.  
+```java
+jdbcTemplate.update("update MEMBER set NAME = ?, PASSWORD = ? where" + "EMAIL = ?",
+...)
+```
+이 코드는 잘못된 부분이 없는 것 같지만 실제 사용하는 쿼리는 다음과 같다.  
+```SQL
+update MEMBER set NAME = ?, PASSWORD = ? whereEMAIL = ?
+```
+BadSqlGrammerException이 발생한다.  
+## 6. 스프링의 익셉션 변환 처리
+SQL 문법아 잘못됐을 때 발생한 메시지를 보면 익셉션 클래스가 org.springframework.jdbc 패키지에 속한 `BadSqlGrammarException` 클래스임을 알 수 있다. `BadSqlGrammarException`이 발생한 이유는 MySQLSyntaxErrorException이 발생했기 때문이다.  
+  
+JDBC API를 사용하는 과정에서 SQLException이 발생하면 이 익셉션을 알맞은 DataAccessException으로 변환해서 발생한다.  
+즉, 다음과 유사한 방식으로 익셉션을 변환해서 재발생한다.  
+```java
+try {
+	... JDBC 사용 코드
+} catch(SQLException ex) {
+	throw convertSqlToDataException(ex);
+}
+```
+예를 들어 MySQL용 JDBC 드라이버는 SQL 문법이 잘못된 경우 SQLException을 상속받은 MySQLSyntaxErrorException을 발생시키는데 JdbcTemplate은 이 익셉션을 DataAccessExcpetion을 상속받은 BadSqlGrammarException으로 변환한다.  
+  
+DataAccessException은 스프링이 제공하는 익셉션 타입으로 데이터 연결에 문제가 있을 때 스프링 모듈이 발생시킨다.  
+    
+익셉션을 변환하는 주된 이유는 연동 기술에 상관없이 동일하게 익셉션을 처리할 수 있도록 하기 위함이다.  
+각 연동 기술에 따라 발생하는 익셉션을 스프링이 제공하는 익셉션으로 변환함으로써 구현 기술에 상관없이 동일한 코드로 익셉션을 처리할 수 있게 된다.  
+  
+## 7. 트랜잭션 처리
