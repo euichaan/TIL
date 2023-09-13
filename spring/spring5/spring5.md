@@ -1490,3 +1490,152 @@ DataAccessException은 스프링이 제공하는 익셉션 타입으로 데이�
 각 연동 기술에 따라 발생하는 익셉션을 스프링이 제공하는 익셉션으로 변환함으로써 구현 기술에 상관없이 동일한 코드로 익셉션을 처리할 수 있게 된다.  
   
 ## 7. 트랜잭션 처리
+트랜잭션을 시작하면 트랜잭션을 커밋하거나 롤백할 때까지 실행한 쿼리들이 하나의 작업 단위가 된다.  
+  
+### 7.1 @Transactional을 이용한 트랜잭션 처리
+@Transactional 애노테이션이 제대로 동작하려면 다음의 두 가지 내용을 스프링 설정에 추가해야 한다.  
+- 플랫폼 트랜잭션 매니저(PlatformTransactionManager) 빈 설정  
+- @Transactional 애노테이션 활성화 설정  
+
+PlatformTransactionManager는 **스프링이 제공하는 트랜잭션 매니저 인터페이스이다.**    
+스프링은 구현기술에 상관없이 동일한 방식으로 트랜잭션을 처리하기 위해 이 인터페이스를 제공한다.  
+JDBC는 DataSourceTransactionManager 클래스를 PlatformTransactionManager로 사용한다.  
+  
+@EnableTransactionManagement 애노테이션은 @Transactional이 붙은 메서드를 트랜잭션 범위에서 실행하는 기능을 활성화한다.  
+등록된 PlatformTransactionManager 빈을 사용해서 트랜잭션을 적용한다.  
+  
+```java
+@Configuration
+@EnableTransactionManagement
+public class AppCtx {
+
+	@Bean(destroyMethod = "close")
+	public DataSource dataSource() {
+		//org.apache.tomcat.jdbc.pool.DataSource 가 javax.sql.DataSource 를 구현한 형태
+		DataSource dataSource = new DataSource();
+		dataSource.setDriverClassName("com.mysql.jdbc.Driver");
+		dataSource.setUrl("jdbc:mysql://localhost/spring5fs?characterEncoding=utf8");
+		dataSource.setUsername("root");
+		dataSource.setPassword("a87524626");
+		dataSource.setInitialSize(2);
+		dataSource.setMaxActive(10);
+		dataSource.setTestWhileIdle(true); // 유휴 커넥션 유효한지 여부 검사
+		dataSource.setMinEvictableIdleTimeMillis(1000 * 60 * 3); // 최소 유휴 시간 3분
+		dataSource.setTimeBetweenEvictionRunsMillis(1000 * 10); // 10초 주기
+		return dataSource;
+	}
+
+	@Bean
+	public PlatformTransactionManager transactionManager() {
+		DataSourceTransactionManager tm = new DataSourceTransactionManager();
+		tm.setDataSource(dataSource());
+		return tm;
+	}
+	...
+```
+트랜잭션 처리를 위한 설정을 완료하면 트랜잭션 범위에서 실행하고 싶은 스프링 빈 객체의 메서드에 @Transactional 애노테이션을 붙이면 된다.  
+```java
+@Transactional
+	public void changePassword(String email, String oldPwd, String newPwd) {
+		Member member = memberDao.selectByEmail(email);
+		if (member == null) {
+			throw new MemberNotFoundException();
+		}
+
+		member.changePassword(oldPwd, newPwd);
+
+		memberDao.update(member);
+	}
+```
+### 7.2 @Transactional과 프록시
+앞서 7장에서 여러 빈 객체에 공통으로 적용되는 기능을 구현하는 방법으로 AOP를 설명했는데 트랜잭션도 공통 기능 중 하나이다.  
+스프링은 @Transactional 애노테이션을 이용해서 트랜잭션을 처리하기 위해 내부적으로 AOP를 사용한다.  
+  
+실제로 @Transactional 애노테이션을 적용하기 위해 @EnableTransactionManagement 태그를 사용하면 스프링은 @Transactional 애노테이션이 적용된 빈 객체를 찾아서 알맞은 프록시 객체를 생성한다.  
+  
+ChangePasswordService 클래스의 메서드에 @Transactional 애노테이션이 적용되어 있으므로 스프링은 트랜잭션 기능을 적용한 프록시 객체를 생성한다. MainForCPS 클래스에서 `ac.getBean("changePasswordService",ChangePasswordService.class);` 코드를 실행하면 ChangePasswordService 객체 대신에 트랜잭션 처리를 위해 생성한 프록시 객체를 리턴한다.  
+  
+이 프록시 객체는 @Transactional 애노테이션이 붙은 메서드를 호출하면 PlatformTransactionManager를 사용해서 트랜잭션을 시작한다.  
+트랜잭션을 시작한 후 실제 객체의 메서드를 호출하고, 성공적으로 실행되면 트랜잭션을 커밋한다.  
+### 7.3 @Transactional 적용 메서드의 롤백 처리
+롤백을 처리하는 주체 또한 프록시 객체이다.  
+**실제로 @Transactional을 처리하기 위한 프록시 객체는 원본 객체의 메서드를 실행하는 과정에서 RuntimeException이 발생하면 트랜잭션을 롤백한다.**  
+별도 설정을 추가하지 않았으면 발생한 익셉션이 언체크 예외(런타임 예외)일 때 트랜잭션을 롤백한다.  
+  
+JdbcTemplate은 DB 연동 과정에 문제가 있으면 DataAccessException을 발생시키는데, 이 역시 RuntimeException을 상속받고 있다. 따라서 JdbcTemplate의 기능을 실행하는 도중 언체크 예외가 발생해도 프록시는 트랜잭션을 롤백한다.  
+  
+SQLException이 발생하는 경우에도 트랜잭션을 롤백하고 싶다면? rollbackFor 속성을 사용해야 한다.  
+```java
+@Transactional(rollbackFor = SQLException.class)
+```
+  
+### 7.4 @Transactional의 주요 속성
+propagation 속성으로 트랜잭션 전파 타입을, isolation으로 트랜잭션 격리 레벨을 지정할 수 있다.  
+@Transactional 애노테이션의 value 속성값이 없으면 등록된 빈 중에서 타입이 PlatformTransactionManager인 빈을 사용한다.  
+앞서 AppCtx 설정 클래스는 DataSourceTransactionManager를 트랜잭션 관리자로 사용했다.  
+```java
+@Bean
+@Bean
+	public PlatformTransactionManager transactionManager() {
+		DataSourceTransactionManager tm = new DataSourceTransactionManager();
+		tm.setDataSource(dataSource());
+		return tm;
+	}
+```
+### 7.6 트랜잭션 전파
+Propagation 열거 타입 값 목록에서 REQUIRED 값의 설명은 다음과 같다.  
+- 메서드를 수행하는 데 트랜잭션이 필요하다는 것을 의미한다. 현재 진행 중인 트랜잭션이 존재하면 해당 트랜잭션을 사용한다. 존재하지 않으면 새로운 트랜잭션을 생성한다.  
+  
+```java
+public class SomeService {
+	public AnyService anyService;
+
+	@Transactional
+	public void some() {
+		anyService.any();
+	}
+
+	public void setAnyService(AnyService as) {
+		this.anyService = as;
+	}
+
+	public class AnyService {
+		@Transactional
+		public void any() { ... }
+	}
+}
+```
+some() 메서드의 내부에서 any()를 호출하는 경우 트랜잭션 처리는 어떻게 될까?  
+  
+기본값이 Propagation.REQUIRED이다. 현재 진행중인 트랜잭션이 존재하면 해당 트랜잭션을 사용하고 존재하지 않으면 새로운 트랜잭션을 생성한다고 했다. 처음 some() 메서드를 호출하면 트랜잭션을 새로 시작한다. 하지만 some() 메서드 내부에서 any() 메서드를 호출하면 이미 some() 메서드에 의해 시작된 트랜잭션이 존재하므로 any() 메서드를 호출하는 시점에는 트랜잭션을 새로 생성하지 않는다.  
+  
+대신 존재하는 트랜잭션을 그대로 사용한다. 즉, some() 메서드와 any() 메서드를 한 트랜잭션으로 묶어서 실행하는 것이다.  
+  
+REQUIRES_NEW 라면 기존 트랜잭션이 존재하는지 여부에 상관없이 항상 새로운 트랜잭션을 시작한다. 따라서 이 경우에는 some() 메서드에 의해 트랜잭션이 생성되고 다시 any() 메서드에 의해 트랜잭션이 생성된다.  
+  
+다음 코드를 보자.  
+```java
+	@Transactional
+	public void changePassword(String email, String oldPwd, String newPwd) {
+		Member member = memberDao.selectByEmail(email);
+		if (member == null) {
+			throw new MemberNotFoundException();
+		}
+
+		member.changePassword(oldPwd, newPwd);
+
+		memberDao.update(member);
+	}
+
+// @Transactional 없음 
+	public void update(Member member) {
+		jdbcTemplate.update(
+			"update MEMBER set NAME = ?, PASSWORD = ? where EMAIL = ?",
+			member.getName(), member.getPassword(), member.getEmail());
+	}
+```
+update 메서드의 경우 @Transactional 애노테이션이 적용되어 있지 않다. 이런 경우 트랜잭션 처리는 어떻게 될까?  
+비록 update() 메서드에 @Transactional이 붙어 있지 않지만 JdbcTemplate 클래스 덕에 트랜잭션 범위에서 쿼리를 실행할 수 있게 된다.  
+**JdbcTemplate은 진행 중인 트랜잭션이 존재하면 해당 트랜잭션 범위에서 쿼리를 실행한다.**  
+  
+# Chapter 09 스프링 MVC 시작하기
