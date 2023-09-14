@@ -10,6 +10,9 @@
 ### JIT  
 - [JIT compiler](https://github.com/euichaan/TIL/blob/main/java/jvm/jit-compiler.md)  
   
+### GC
+- [GC](https://github.com/euichaan/TIL/blob/main/java/gc/gc.md)  
+  
 ### Singleton
 - [Singleton](https://github.com/euichaan/TIL/blob/main/java/singleton/singleton.md)  
   
