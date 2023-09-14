@@ -123,3 +123,7 @@ G1 은 가비지 퍼스트의 줄임말이다.
 G1 GC는 Heap 영역을 조금 다르게 사용한다. Heap을 일정 크기의 Region으로 잘게 나누어 어떤 영역은 Young Gen, 어떤 영역은 Old Gen으로 쓴다. 런타임에 G1 GC가 필요에 따라 영역별 Region 개수를 튜닝한다. 그에 따라 Stop the world를 최소화 할 수 있었다고 한다.  
   
 Java 9 이상부터는 G1 GC를 기본 GC 실행방식으로 사용한다.  
+  
+출처  
+https://joel-dev.site/94  
+https://papimon.tistory.com/93  
