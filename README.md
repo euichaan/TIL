@@ -99,6 +99,9 @@
 - [인덱스 개론](https://github.com/euichaan/TIL/blob/main/databaselearn/realmysql/8-index.md)  
 - [Server Status Variables](https://github.com/euichaan/TIL/blob/main/databaselearn/server-status-variables/status-variables.md)  
   
+### Lock
+- [INSERT만 실행되는 로그 테이블의 구조 변경하기](https://github.com/euichaan/TIL/blob/main/databaselearn/lock/log_table_structure.md)  
+  
 ### Real MySQL 8.0 2권
 - [SubQuery](https://github.com/euichaan/TIL/blob/main/databaselearn/subquery/subquery.md)  
   
