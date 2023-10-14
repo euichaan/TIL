@@ -80,6 +80,11 @@
 ### 스프링 5 프로그래밍 입문
 - [스프링 5 프로그래밍 입문 요약](https://github.com/euichaan/TIL/blob/main/spring/spring5/spring5.md)  
     
+## JPA
+  
+### JPA BASIC
+- [엔티티 필드에 Wrapper 타입 사용](https://github.com/euichaan/TIL/blob/main/jpa/entity/entity-type.md)  
+
 ## REST
   
 ### REST-API
