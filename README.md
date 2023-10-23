@@ -97,7 +97,10 @@
 - [SQL 첫걸음](https://github.com/euichaan/TIL/tree/main/databaselearn/sql-first)  
   
 ### 인덱스
-- [인덱스 관련 질문과 적용](https://github.com/euichaan/TIL/blob/main/databaselearn/index/index.md)
+- [인덱스 관련 질문과 적용](https://github.com/euichaan/TIL/blob/main/databaselearn/index/index.md)  
+  
+### 러닝 SQL
+- [3장 쿼리 입문](https://github.com/euichaan/TIL/blob/main/databaselearn/%EB%9F%AC%EB%8B%9DSQL/3-%EC%BF%BC%EB%A6%AC%20%EC%9E%85%EB%AC%B8.md)  
   
 ### Real MySQL 8.0 1권
 - [MySQL 아키텍처](https://github.com/euichaan/TIL/blob/main/databaselearn/realmysql/4-architecture.md)  
