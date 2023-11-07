@@ -40,6 +40,9 @@
 ### Annotation
 - [Annotation](https://github.com/euichaan/TIL/blob/main/java/annotation/annotation.md)  
 - [애노테이션 프로세서](https://github.com/euichaan/TIL/blob/main/java/annotation/annotationprocessor.md)  
+  
+### Record
+- [Java Record](https://github.com/euichaan/TIL/blob/main/java/record/record.md)  
     
 ## Test
   
