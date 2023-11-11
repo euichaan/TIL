@@ -88,6 +88,7 @@
 ### JPA BASIC
 - [엔티티 필드에 Wrapper 타입 사용](https://github.com/euichaan/TIL/blob/main/jpa/entity/entity-type.md)  
 - [변경 감지](https://github.com/euichaan/TIL/blob/main/jpa/%EC%98%81%EC%86%8D%EC%84%B1%EA%B4%80%EB%A6%AC/dirtycheking.md)  
+- [프록시](https://github.com/euichaan/TIL/blob/main/jpa/%ED%94%84%EB%A1%9D%EC%8B%9C/proxy.md)  
 
 ## REST
   
