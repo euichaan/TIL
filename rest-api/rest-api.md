@@ -3,6 +3,16 @@ REST는 아키텍처 스타일이다.
 아키텍처 패턴: 반복되는 문제 상황을 해결하는 도구  
 아키텍처 스타일: 반복되는 아키텍처 디자인  
   
+## REST가 나오기 전의 역사
+WEB (1991)  
+Q: 어떻게 인터넷에서 정보를 공유할 것인가?  
+A: 정보들을 하이퍼텍스트로 연결한다. (표현 형식: HTML 식별자: URI 전송 방법: HTTP)  
+  
+Roy T.Fielding의 고민: 어떻게 하면 Web을 망가뜨리지 않고 HTTP를 발전시킬까?  -> 해답이 HTTP Object Model -> REST  
+  
+SOAP API vs REST API의 결과, REST API가 우세하게 되어 REST가 승리했다.  
+CMIS가 REST 바인딩을 지원했는데, Roy T.Fielding은 "No REST in CMIS"라고 반박했다.  
+  
 ## REST API의 일반적인 인식
 우리가 일반적으로 알고 있는 REST API에 대한 내용은 다음과 같다.
 1. URI를 통해 자원을 지정    
